@@ -16,7 +16,9 @@
 - [Туториал 4](https://github.com/mabe02/lanterna/blob/master/docs/tutorial/Tutorial04.md)
 
 ## Архитектура
-![img.png](img.png)
+
+![task_2_arch.png](images/task_2_arch.png)
+
 - Interface Entity
     - Interface Player
     - Interface NPC
