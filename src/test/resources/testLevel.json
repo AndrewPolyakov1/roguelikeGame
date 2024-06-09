@@ -1,0 +1,12 @@
+{
+  "random" : {
+    "deprecated" : false
+  },
+  "exitPoint" : {
+    "x" : 1,
+    "y" : 1
+  },
+  "width" : 3,
+  "height" : 3,
+  "cellGrid" : [ [ true, true, true ], [ true, false, true ], [ true, true, true ] ]
+}
