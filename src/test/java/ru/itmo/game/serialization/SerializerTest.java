@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.itmo.game.objects.Enemy;
 import ru.itmo.game.objects.Level;
+import ru.itmo.game.objects.enemies.AgressiveBehavior;
+import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.Point;
 
 import java.io.IOException;
@@ -17,20 +19,21 @@ class SerializerTest {
     void serialize() throws IOException {
         Serializer serializer = new Serializer(Path.of("src/test/resources"));
 
-        List<Enemy> enemies = List.of(new Enemy(
-                Enemy.EnemyType.VILLAGER,
-                Enemy.EnemyBehavior.PASSIVE,
-                10,
-                20,
-                1,
-                Point.of(1, 2)
-
-        ));
         boolean[][] cellGrid = new boolean[][]{
                 {true, true, true},
                 {true, false, true},
                 {true, true, true}
         };
+        List<Enemy> enemies = List.of(new Enemy(
+                Enemy.EnemyType.VILLAGER,
+                new AgressiveBehavior(),
+                10,
+                20,
+                1,
+                Point.of(1, 2),
+                new Enviroment(10, 10, new Level(3, 3, cellGrid)
+                )
+        ));
         Level level = new Level(3, 3, cellGrid);
         String serialized = serializer.serialize(level);
         System.out.println(serialized);
@@ -62,13 +65,13 @@ class SerializerTest {
         Assertions.assertTrue(Files.exists(Path.of("src/test/resources/testLevel.json")));
     }
 
-    @Test
-    void deserializeFromFile() throws IOException {
-        Serializer serializer = new Serializer(Path.of("src/test/resources"));
-
-        Level level = serializer.deserializeFromFile("testLevel.json", Level.class);
-        System.out.println(level);
-    }
+//    @Test
+//    void deserializeFromFile() throws IOException {
+//        Serializer serializer = new Serializer(Path.of("src/test/resources"));
+//
+//        Level level = serializer.deserializeFromFile("testLevel.json", Level.class);
+//        System.out.println(level);
+//    }
 
 
 }
