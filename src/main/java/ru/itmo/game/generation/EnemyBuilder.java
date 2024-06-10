@@ -22,7 +22,7 @@ public class EnemyBuilder {
     public Enemy buildRandomEnemy(Enviroment enviroment, int levelLimit) {
         Point position = enviroment.generateRandomEmptyPoint();
         //??????? ?????? ?? ???????
-        EnemyBehavior behavior = new ScaredBehavior();
+        EnemyBehavior behavior = new AgressiveBehavior();
         Enemy.EnemyType type = RandomUtil.randomEnum(Enemy.EnemyType.class);
         int level = random.nextInt(1, levelLimit);
         Enemy enemy = new Enemy(

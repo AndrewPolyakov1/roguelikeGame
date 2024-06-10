@@ -215,6 +215,42 @@ public class HadlerEnemies {
         return path;
     }
 
+    public static List<Point> pathAttackFinding(boolean[][] ceilGrid, Point possitionEnemy, Point possPlayer) {
+        List<Point> path = new ArrayList<>();
+        path.add(possitionEnemy);
+
+        Point bestMove = null;
+        double minDistance = Double.MAX_VALUE;
+
+        int[][] directions = {
+                {-1, 0},
+                {1, 0},
+                {0, -1},
+                {0, 1}
+        };
+
+        for (int[] direction : directions) {
+            int newX = possitionEnemy.x + direction[0];
+            int newY = possitionEnemy.y + direction[1];
+
+            if (newX >= 0 && newY >= 0 && newX < ceilGrid.length && newY < ceilGrid[0].length && !(ceilGrid[newX][newY])) {
+                Point newPoint = new Point(newX, newY);
+                double distance = calculateDistance(newPoint, possPlayer);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    bestMove = newPoint;
+                }
+            }
+        }
+
+        if (bestMove != null) {
+            path.add(bestMove);
+        }
+
+        return path;
+    }
+
     private static double calculateDistance(Point a, Point b) {
         int dx = a.x - b.x;
         int dy = a.y - b.y;
