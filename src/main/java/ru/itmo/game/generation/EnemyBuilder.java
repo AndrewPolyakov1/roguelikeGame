@@ -26,7 +26,8 @@ public class EnemyBuilder {
                 getHealthFromParameters(level, type),
                 getDamageFromParameters(level, type),
                 level,
-                position
+                position,
+                enviroment
         );
 
         return enemy;

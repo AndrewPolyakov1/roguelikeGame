@@ -10,26 +10,38 @@ import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.Point;
 
 import java.io.Serializable;
-import java.util.Random;
+import java.util.List;
+
+import static ru.itmo.game.util.HadlerEnemies.randomWalk;
 
 public class Enemy extends BasePerson implements DrawableInterface, Serializable, MovableInterface {
 
     public EnemyType enemyType;
 
     public EnemyBehavior behavior;
-    private boolean isAlive;
+    private boolean isAlive = true;
+    private List<Point> pathIdle;
+    private final int steps = 50;
+    private int pos = 0;
 
     public Enemy(@JsonProperty("EnemyType") EnemyType enemyType,
                  @JsonProperty("EnemyBehavior") EnemyBehavior behavior,
                  @JsonProperty("health") int health,
                  @JsonProperty("damage") int damage,
                  @JsonProperty("level") int level,
-                 @JsonProperty("position") Point position
+                 @JsonProperty("position") Point position,
+                 Enviroment enviroment
     ) {
         super(health, damage, level, position);
         this.enemyType = enemyType;
         this.behavior = behavior;
         isAlive = true;
+        generatePathIdle(position, enviroment);
+    }
+
+    private void generatePathIdle(Point src, Enviroment env) {
+        boolean[][] cellGrid = env.getLevel().getCellGrid();
+        pathIdle = randomWalk(cellGrid, steps);
     }
 
     @Override
@@ -63,16 +75,14 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
         if (!isAlive) {
             return;
         }
-        Random random = new Random();
-        int moveX;
-        int moveY;
-
-        do {
-            moveX = random.nextInt(-1, 1);
-            moveY = random.nextInt(-1, 1);
-        } while (!enviroment.isTileEmpty(Point.of(position.x + moveX, position.y + moveY)));
-
-        position = Point.of(position.x + moveX, position.y + moveY);
+        if (pathIdle == null || pathIdle.isEmpty()) {
+            return;
+        }
+        Point nextPoint = pathIdle.get(pos);
+        if (enviroment.isTileEmpty(nextPoint)) {
+            position = nextPoint;
+        }
+        pos = (pos + 1) % pathIdle.size();
     }
 
     public enum EnemyType {
