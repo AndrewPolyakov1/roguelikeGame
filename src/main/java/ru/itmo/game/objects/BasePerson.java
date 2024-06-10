@@ -20,6 +20,12 @@ public abstract class BasePerson implements Serializable {
     @Getter
     @Setter
     public Point position;
+    @Getter
+    @Setter
+    private int attackRadius = 4;
+    @Getter
+    @Setter
+    private long lastAttack = System.currentTimeMillis();
 
     public BasePerson(@JsonProperty("health") int health, @JsonProperty("damage") int damage, @JsonProperty("level") int level, @JsonProperty("position") Point position) {
         this.health = health;

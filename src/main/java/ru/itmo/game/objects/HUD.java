@@ -2,6 +2,7 @@ package ru.itmo.game.objects;
 
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
+import ru.itmo.game.drawable.Colours;
 import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.drawable.Symbols;
 import ru.itmo.game.util.Enviroment;
@@ -13,7 +14,7 @@ public class HUD implements DrawableInterface {
     public static final int hudHeight = 3;
     private static final int heightOffset = 1;
     private static final int widthOffsetLeft = 2;
-    private static final int widthOffsetRight = 20;
+    private static final int widthOffsetRight = 30;
     private final Enviroment enviroment;
 
     public HUD(int width, int height, Enviroment enviroment) {
@@ -24,7 +25,7 @@ public class HUD implements DrawableInterface {
 
     @Override
     public void draw(TextGraphics textGraphics) {
-        textGraphics.setForegroundColor(TextColor.ANSI.RED);
+        textGraphics.setForegroundColor(Colours.HUD);
 
         int startPosition = 1;
         int vPosition = screenHeight - hudHeight + heightOffset;
@@ -35,8 +36,13 @@ public class HUD implements DrawableInterface {
             textGraphics.putString(position, vPosition, Symbols.HEART);
         }
 
-        textGraphics.putString(screenWidth - widthOffsetRight, vPosition, "LVL: %d DMG: %d".formatted(enviroment.getPlayer().getLevel(), enviroment.getPlayer().getDamage()));
-
-        textGraphics.setBackgroundColor(TextColor.ANSI.GREEN);
+        textGraphics.putString(screenWidth - widthOffsetRight,
+                vPosition,
+                "LVL: %d DMG: %d EXP %d".formatted(
+                        enviroment.getPlayer().getLevel(),
+                        enviroment.getPlayer().getDamage(),
+                        enviroment.getPlayer().getExperience()
+                )
+        );
     }
 }

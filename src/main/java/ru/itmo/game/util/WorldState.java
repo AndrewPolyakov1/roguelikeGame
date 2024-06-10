@@ -22,8 +22,8 @@ public class WorldState implements DrawableInterface {
             .lookup()
             .lookupClass()
             .getName());
-    public Enviroment environment;
     private final Random random = new Random();
+    public Enviroment environment;
     private int currentLevel;
     @Setter
     private List<Enemy> enemyList;
@@ -37,7 +37,7 @@ public class WorldState implements DrawableInterface {
         initializeEnemyList(random.nextInt(1, 4 * currentLevel));
     }
 
-    public void restart(){
+    public void restart() {
         this.currentLevel = 1;
         this.environment = initializeEnvironment(environment.getWidth(), environment.getHeight());
         this.hud = new HUD(environment.getWidth(), environment.getHeight() + HUD.hudHeight, this.environment);
@@ -71,7 +71,7 @@ public class WorldState implements DrawableInterface {
     }
 
     public boolean isLevelDone() {
-        return environment.isLevelDone();
+        return environment.isLevelDone() || enemyList.stream().allMatch((enemy -> !enemy.isAlive()));
     }
 
     public void newLevel() {
@@ -84,9 +84,10 @@ public class WorldState implements DrawableInterface {
         initializeEnemyList(random.nextInt(1, 4 * currentLevel));
         // Player stats increase
         currentLevel++;
-        environment.updatePlayerHealth(2);
+        environment.updatePlayerHealth(1);
         environment.updatePlayerLevel(1);
         environment.updatePlayerDamage(1);
+        environment.updatePlayerExperience(200);
 
         //
     }
@@ -107,9 +108,24 @@ public class WorldState implements DrawableInterface {
         this.enemyList = enemyList;
     }
 
-    public void update() {
-//        log.info("Updating world state");
+    public boolean update() {
         moveAllEnemies();
+        enemiesTryAttackPlayer();
+
+        if (environment.getPlayer().getHealth() < 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    public void enemiesTryAttackPlayer() {
+        enemyList.forEach(enemy -> enemy.attack(environment));
+    }
+
+    public void playerAttack() {
+        environment.playerAttack(this.enemyList);
     }
 
     public void moveAllEnemies() {

@@ -12,6 +12,7 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import lombok.Getter;
 import lombok.Setter;
+import ru.itmo.game.drawable.Colours;
 import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.WorldState;
 
@@ -69,6 +70,7 @@ public class GameLoop {
         boolean interrupted = false;
         long lastUpdateTime = System.currentTimeMillis();
         boolean paused = false;
+        boolean gameOver = false;
 
 
         /*
@@ -81,7 +83,7 @@ public class GameLoop {
 
             // Render
 
-            textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
+            textGraphics.setForegroundColor(Colours.DEFAULT);
 
             world.draw(textGraphics);
             ////////////////////////////
@@ -100,17 +102,21 @@ public class GameLoop {
                 interrupted = true;
             }
             if (signal == Signal.PAUSE) {
-                paused = !paused;
+                paused = true;
             }
             if (signal == Signal.RESTART){
                 world.restart();
             }
+            if (signal == Signal.ATTACK){
+                world.playerAttack();
+            }
 
             if (paused) {
-                screen.clear();
+
                 pauseScreen(WIDTH, HEIGHT, textGraphics);
                 screen.refresh();
-
+                screen.readInput();
+                paused = false;
                 continue;
             }
 
@@ -119,13 +125,23 @@ public class GameLoop {
                 log.info("Starting new level");
                 world.newLevel();
             }
+
+            if (gameOver){
+                screen.clear();
+                gameOver(WIDTH, HEIGHT, textGraphics);
+                screen.refresh();
+                // Blocking
+                screen.readInput();
+
+                world.restart();
+            }
             //
 
             long currentTime = System.currentTimeMillis();
 
             if (currentTime - lastUpdateTime >= 1000 / FPS) {
                 // Game events
-                world.update();
+                gameOver = world.update();
                 //
                 lastUpdateTime = currentTime;
             }
@@ -174,10 +190,14 @@ public class GameLoop {
                 log.info("Game Paused");
                 return Signal.PAUSE;
             }
-            else if (keyStroke.getKeyType() == KeyType.EOF ||
-                    keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'r'
+            else if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'r'
             ) {
                 return Signal.RESTART;
+            }
+            else if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'e'
+            ) {
+                log.info("Attack key pressed");
+                return Signal.ATTACK;
             }
 
 
@@ -194,14 +214,23 @@ public class GameLoop {
         QUIT,
         NONE,
         PAUSE,
-        RESTART
+        RESTART,
+        ATTACK
     }
 
     public void pauseScreen(int width, int height, TextGraphics graphics) {
         String text = "Game Paused";
         graphics.setBackgroundColor(TextColor.ANSI.BLACK);
-//        graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
-        graphics.setForegroundColor(TextColor.ANSI.RED);
+        graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
+        graphics.setForegroundColor(Colours.TEXT_COLOR);
+        graphics.putString(width / 2 - (text.length() / 2), height / 2 - 1, text);
+    }
+
+    public void gameOver(int width, int height, TextGraphics graphics) {
+        String text = "Game Over";
+        graphics.setBackgroundColor(TextColor.ANSI.BLACK);
+        graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
+        graphics.setForegroundColor(Colours.TEXT_COLOR);
         graphics.putString(width / 2 - (text.length() / 2), height / 2 - 1, text);
 
     }

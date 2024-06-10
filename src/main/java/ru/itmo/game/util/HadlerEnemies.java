@@ -309,7 +309,7 @@ public class HadlerEnemies {
         return bestMove;
     }
 
-    private static double calculateDistance(Point a, Point b) {
+    public static double calculateDistance(Point a, Point b) {
         int dx = a.x - b.x;
         int dy = a.y - b.y;
         return Math.sqrt(dx * dx + dy * dy);

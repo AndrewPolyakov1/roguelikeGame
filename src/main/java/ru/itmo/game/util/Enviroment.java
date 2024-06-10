@@ -4,9 +4,11 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import lombok.Getter;
 import lombok.Setter;
 import ru.itmo.game.drawable.DrawableInterface;
+import ru.itmo.game.objects.Enemy;
 import ru.itmo.game.objects.Level;
 import ru.itmo.game.objects.Player;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -50,6 +52,17 @@ public class Enviroment implements DrawableInterface {
 
     public void updatePlayerDamage(int increment) {
         player.setDamage(player.getDamage() + increment);
+    }
+    public void updatePlayerExperience(int increment) {
+        player.updateExperience(increment);
+    }
+
+    public void updatePlayerCooldown(int increment) {
+        player.setCooldown(player.getCooldown() + increment);
+    }
+
+    public void playerAttack(List<Enemy> enemies) {
+        player.attack(enemies);
     }
 
     public boolean tryMovePlayerDown() {
