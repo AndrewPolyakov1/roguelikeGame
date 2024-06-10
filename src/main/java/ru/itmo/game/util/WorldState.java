@@ -1,6 +1,7 @@
 package ru.itmo.game.util;
 
 import com.googlecode.lanterna.graphics.TextGraphics;
+import lombok.Getter;
 import lombok.Setter;
 import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.generation.EnemyBuilder;
@@ -24,6 +25,7 @@ public class WorldState implements DrawableInterface {
             .getName());
     private final Random random = new Random();
     public Enviroment environment;
+    @Getter
     private int currentLevel;
     @Setter
     private List<Enemy> enemyList;

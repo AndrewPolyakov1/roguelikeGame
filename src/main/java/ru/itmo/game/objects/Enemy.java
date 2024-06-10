@@ -15,6 +15,7 @@ import ru.itmo.game.util.Point;
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static ru.itmo.game.util.HandlerEnemies.findPathToClosestIdlePoint;
@@ -89,8 +90,19 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
                 textGraphics.putString(point.x, point.y, " ");
             }
         }
-        textGraphics.putString(position.x, position.y, Symbols.ENEMY);
+        textGraphics.putString(position.x, position.y, getSymbolForClass(enemyType));
         textGraphics.setForegroundColor(Colours.DEFAULT);
+    }
+    private static final Map<EnemyType, String> iconMapper = Map.of(
+            EnemyType.VILLAGER, Symbols.ENEMY,
+            EnemyType.HEAVY, Symbols.ENEMY_2
+    );
+    private static String getSymbolForClass(EnemyType enemyType) {
+        String symbol = iconMapper.get(enemyType);
+        if (symbol == null) {
+            throw new IllegalArgumentException("Unknown enemy type");
+        }
+        return symbol;
     }
 
     @Override

@@ -3,7 +3,8 @@ package ru.itmo.game.drawable;
 @SuppressWarnings("unused")
 public class Symbols {
     public static final String PLAYER = String.valueOf('X');
-    public static final String ENEMY = String.valueOf('O');
+    public static final String ENEMY = String.valueOf('V');
+    public static final String ENEMY_2 = String.valueOf('H');
     public static final String WALL = String.valueOf('\u2588');
     public static final String PASSAGE = String.valueOf(' ');
     public static final String EMPTY = String.valueOf(' ');

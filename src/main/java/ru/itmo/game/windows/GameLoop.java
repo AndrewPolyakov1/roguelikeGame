@@ -121,6 +121,9 @@ public class GameLoop {
             // Player events
             if (world.isLevelDone()) {
                 log.info("Starting new level");
+                newLevel(WIDTH, HEIGHT, textGraphics, world);
+                screen.refresh();
+                screen.readInput();
                 world.newLevel();
             }
 
@@ -204,19 +207,32 @@ public class GameLoop {
 
     public void pauseScreen(int width, int height, TextGraphics graphics) {
         String text = "Game Paused";
+        String text2 = "Press 'escape' to resume";
         graphics.setBackgroundColor(TextColor.ANSI.BLACK);
         graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
         graphics.setForegroundColor(Colours.TEXT_COLOR);
         graphics.putString(width / 2 - (text.length() / 2), height / 2 - 1, text);
+        graphics.putString(width / 2 - (text2.length() / 2), height / 2, text2);
     }
 
     public void gameOver(int width, int height, TextGraphics graphics) {
         String text = "Game Over";
+        String text2 = "Press 'r' to restart";
         graphics.setBackgroundColor(TextColor.ANSI.BLACK);
         graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
         graphics.setForegroundColor(Colours.TEXT_COLOR);
         graphics.putString(width / 2 - (text.length() / 2), height / 2 - 1, text);
+        graphics.putString(width / 2 - (text2.length() / 2), height / 2, text2);
+    }
 
+    public void newLevel(int width, int height, TextGraphics graphics, WorldState world) {
+        String text = "Level " + (world.getCurrentLevel() + 1);
+        String text2 = "Press 'enter' to start";
+        graphics.setBackgroundColor(TextColor.ANSI.BLACK);
+        graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
+        graphics.setForegroundColor(Colours.TEXT_COLOR);
+        graphics.putString(width / 2 - (text.length() / 2), height / 2 - 1, text);
+        graphics.putString(width / 2 - (text2.length() / 2), height / 2, text2);
     }
 
     enum Signal {
