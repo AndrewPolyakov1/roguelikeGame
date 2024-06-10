@@ -9,10 +9,13 @@ import java.io.Serializable;
 
 public abstract class BasePerson implements Serializable {
     @Getter
+    @Setter
     public int health;
     @Getter
+    @Setter
     public int damage;
     @Getter
+    @Setter
     public int level;
     @Getter
     @Setter

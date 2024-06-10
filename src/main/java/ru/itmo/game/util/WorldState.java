@@ -6,6 +6,9 @@ import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.generation.EnemyBuilder;
 import ru.itmo.game.generation.LevelBuilder;
 import ru.itmo.game.objects.Enemy;
+import ru.itmo.game.objects.HUD;
+import ru.itmo.game.objects.Level;
+import ru.itmo.game.objects.Player;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -19,38 +22,72 @@ public class WorldState implements DrawableInterface {
             .lookup()
             .lookupClass()
             .getName());
-    public final Enviroment enviroment;
+    public Enviroment environment;
     private final Random random = new Random();
     private int currentLevel;
     @Setter
     private List<Enemy> enemyList;
 
-    public WorldState(Enviroment enviroment) {
+    private HUD hud;
+
+    public WorldState(int WIDTH, int HEIGHT) {
         this.currentLevel = 1;
-        this.enviroment = enviroment;
+        this.environment = initializeEnvironment(WIDTH, HEIGHT - HUD.hudHeight);
+        this.hud = new HUD(WIDTH, HEIGHT, this.environment);
         initializeEnemyList(random.nextInt(1, 4 * currentLevel));
+    }
+
+    public void restart(){
+        this.currentLevel = 1;
+        this.environment = initializeEnvironment(environment.getWidth(), environment.getHeight());
+        this.hud = new HUD(environment.getWidth(), environment.getHeight() + HUD.hudHeight, this.environment);
+        initializeEnemyList(random.nextInt(1, 4 * currentLevel));
+    }
+
+    public Enviroment initializeEnvironment(int WIDTH, int HEIGHT) {
+        LevelBuilder levelBuilder = new LevelBuilder(
+                WIDTH,
+                HEIGHT
+        );
+        Level level = levelBuilder.build(5, 0.4);
+
+        Enviroment enviroment = new Enviroment(WIDTH, HEIGHT, level);
+        Player player = new Player(
+                10,
+                10,
+                1,
+                enviroment.generateRandomEmptyPoint()
+        );
+        enviroment.setPlayer(player);
+
+        return enviroment;
     }
 
     @Override
     public void draw(TextGraphics textGraphics) {
-        enviroment.draw(textGraphics);
+        environment.draw(textGraphics);
         enemyList.forEach(enemy -> enemy.draw(textGraphics));
+        hud.draw(textGraphics);
     }
 
     public boolean isLevelDone() {
-        return enviroment.isLevelDone();
+        return environment.isLevelDone();
     }
 
     public void newLevel() {
         LevelBuilder levelBuilder = new LevelBuilder(
-                enviroment.getWidth(),
-                enviroment.getHeight()
+                environment.getWidth(),
+                environment.getHeight()
         );
-        enviroment.setLevel(levelBuilder.build(5, 0.4));
-        enviroment.setPlayerPosition(enviroment.generateRandomEmptyPoint());
+        environment.setLevel(levelBuilder.build(5, 0.4));
+        environment.setPlayerPosition(environment.generateRandomEmptyPoint());
         initializeEnemyList(random.nextInt(1, 4 * currentLevel));
         // Player stats increase
         currentLevel++;
+        environment.updatePlayerHealth(2);
+        environment.updatePlayerLevel(1);
+        environment.updatePlayerDamage(1);
+
         //
     }
 
@@ -62,7 +99,7 @@ public class WorldState implements DrawableInterface {
         for (int i = 0; i < enemyCount; i++) {
             enemyList.add(
                     enemyBuilder.buildRandomEnemy(
-                            enviroment,
+                            environment,
                             currentLevel + 1
                     )
             );
@@ -71,11 +108,11 @@ public class WorldState implements DrawableInterface {
     }
 
     public void update() {
-        log.info("Updating world state");
+//        log.info("Updating world state");
         moveAllEnemies();
     }
 
     public void moveAllEnemies() {
-        enemyList.forEach(enemy -> enemy.move(enviroment));
+        enemyList.forEach(enemy -> enemy.move(environment));
     }
 }
