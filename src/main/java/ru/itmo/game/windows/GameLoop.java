@@ -12,9 +12,6 @@ import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 import lombok.Getter;
 import lombok.Setter;
-import ru.itmo.game.generation.LevelBuilder;
-import ru.itmo.game.objects.Level;
-import ru.itmo.game.objects.Player;
 import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.WorldState;
 
@@ -43,11 +40,11 @@ public class GameLoop {
         }
     }
 
-    public void start() throws InterruptedException, IOException {
+    public void start() throws IOException {
         log.info("GameLoop started");
 
-        int WIDTH = 100;
-        int HEIGHT = 50;
+        int WIDTH = 150;
+        int HEIGHT = 60;
         Screen screen;
         TextGraphics textGraphics;
         TerminalSize terminalSize;
@@ -65,29 +62,18 @@ public class GameLoop {
             return;
         }
 
-        //  Create a new Environment
-        LevelBuilder levelBuilder = new LevelBuilder(
-                WIDTH,
-                HEIGHT
-        );
-        Level level = levelBuilder.build(5, 0.4);
-
-        Enviroment enviroment = new Enviroment(WIDTH, HEIGHT, level);
-        Player player = new Player(
-                10,
-                10,
-                1,
-                enviroment.generateRandomEmptyPoint()
-        );
-        enviroment.setPlayer(player);
-
-        WorldState world = new WorldState(enviroment);
-
+        //  Create a new WorldState
+        WorldState world = new WorldState(WIDTH, HEIGHT);
         //
 
         boolean interrupted = false;
         long lastUpdateTime = System.currentTimeMillis();
+        boolean paused = false;
 
+
+        /*
+        Main game loop
+         */
         while (!interrupted) {
 
             textGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
@@ -110,15 +96,29 @@ public class GameLoop {
             KeyStroke keyStroke = screen.pollInput();
 
             Signal signal = handleInput(keyStroke, world);
-            if (signal == Signal.QUIT){
+            if (signal == Signal.QUIT) {
                 interrupted = true;
+            }
+            if (signal == Signal.PAUSE) {
+                paused = !paused;
+            }
+            if (signal == Signal.RESTART){
+                world.restart();
+            }
+
+            if (paused) {
+                screen.clear();
+                pauseScreen(WIDTH, HEIGHT, textGraphics);
+                screen.refresh();
+
+                continue;
             }
 
             // Player events
-                if (world.isLevelDone()){
-                    log.info("Starting new level");
-                    world.newLevel();
-                }
+            if (world.isLevelDone()) {
+                log.info("Starting new level");
+                world.newLevel();
+            }
             //
 
             long currentTime = System.currentTimeMillis();
@@ -135,7 +135,7 @@ public class GameLoop {
     }
 
     private Signal handleInput(KeyStroke keyStroke, WorldState worldState) {
-        Enviroment enviroment = worldState.enviroment;
+        Enviroment enviroment = worldState.environment;
         if (keyStroke != null) {
             if (keyStroke.getKeyType() == KeyType.ArrowDown) {
                 log.info("ArrowDown");
@@ -165,11 +165,21 @@ public class GameLoop {
                 } else {
                     return Signal.NONE;
                 }
-            } else if (
+            } else if (keyStroke.getKeyType() == KeyType.EOF ||
                     keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'q'
             ) {
                 return Signal.QUIT;
+            } else if (keyStroke.getKeyType() == KeyType.Escape
+            ) {
+                log.info("Game Paused");
+                return Signal.PAUSE;
             }
+            else if (keyStroke.getKeyType() == KeyType.EOF ||
+                    keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'r'
+            ) {
+                return Signal.RESTART;
+            }
+
 
         }
         return Signal.NONE;
@@ -182,6 +192,17 @@ public class GameLoop {
         MOVED_LEFT,
         MOVED_RIGHT,
         QUIT,
-        NONE
+        NONE,
+        PAUSE,
+        RESTART
+    }
+
+    public void pauseScreen(int width, int height, TextGraphics graphics) {
+        String text = "Game Paused";
+        graphics.setBackgroundColor(TextColor.ANSI.BLACK);
+//        graphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(width, height), ' ');
+        graphics.setForegroundColor(TextColor.ANSI.RED);
+        graphics.putString(width / 2 - (text.length() / 2), height / 2 - 1, text);
+
     }
 }

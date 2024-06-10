@@ -15,6 +15,7 @@ import java.util.Random;
 public class Enviroment implements DrawableInterface {
     private final Random random = new Random();
     @Setter
+    @Getter
     private Player player;
     @Getter
     @Setter
@@ -39,12 +40,16 @@ public class Enviroment implements DrawableInterface {
         player.setPosition(position);
     }
 
-    public void drawLevel(TextGraphics textGraphics) {
-        level.draw(textGraphics);
+    public void updatePlayerHealth(int increment) {
+        player.setHealth(player.getHealth() + increment);
     }
 
-    public void drawPlayer(TextGraphics textGraphics) {
-        player.draw(textGraphics);
+    public void updatePlayerLevel(int increment) {
+        player.setLevel(player.getLevel() + increment);
+    }
+
+    public void updatePlayerDamage(int increment) {
+        player.setDamage(player.getDamage() + increment);
     }
 
     public boolean tryMovePlayerDown() {
