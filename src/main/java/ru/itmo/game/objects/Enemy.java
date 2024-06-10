@@ -1,15 +1,18 @@
 package ru.itmo.game.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import lombok.Getter;
 import ru.itmo.game.drawable.DrawableInterface;
-import ru.itmo.game.util.Environment;
+import ru.itmo.game.drawable.Symbols;
+import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.Point;
 
 import java.io.Serializable;
+import java.util.Random;
 
-public class Enemy extends BasePerson implements DrawableInterface, Serializable {
+public class Enemy extends BasePerson implements DrawableInterface, Serializable, MovableInterface {
 
     public EnemyType enemyType;
 
@@ -47,7 +50,29 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
 
     @Override
     public void draw(TextGraphics textGraphics) {
+        if (!isAlive) {
+            return;
+        }
+        textGraphics.setForegroundColor(TextColor.ANSI.RED);
+        textGraphics.putString(position.x, position.y, Symbols.ENEMY);
+        textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
+    }
 
+    @Override
+    public void move(Enviroment enviroment) {
+        if (!isAlive) {
+            return;
+        }
+        Random random = new Random();
+        int moveX;
+        int moveY;
+
+        do {
+            moveX = random.nextInt(-1, 1);
+            moveY = random.nextInt(-1, 1);
+        } while (!enviroment.isTileEmpty(Point.of(position.x + moveX, position.y + moveY)));
+
+        position = Point.of(position.x + moveX, position.y + moveY);
     }
 
     public enum EnemyType {

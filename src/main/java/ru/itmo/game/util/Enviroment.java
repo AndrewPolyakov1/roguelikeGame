@@ -3,7 +3,7 @@ package ru.itmo.game.util;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import lombok.Getter;
 import lombok.Setter;
-import ru.itmo.game.generation.LevelBuilder;
+import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.objects.Level;
 import ru.itmo.game.objects.Player;
 
@@ -12,25 +12,31 @@ import java.util.Random;
 /**
  * <h2>Container to store Game environment</h2>
  */
-public class Environment {
+public class Enviroment implements DrawableInterface {
     private final Random random = new Random();
     @Setter
     private Player player;
+    @Getter
+    @Setter
     private Level level;
     @Getter
     private int width;
     @Getter
     private int height;
-
-    @Getter
-    private int currentLevel;
-
-
-    public Environment(int width, int height, Level level) {
+    public Enviroment(int width, int height, Level level) {
         this.width = width;
         this.height = height;
         this.level = level;
-        this.currentLevel = 1;
+    }
+
+    @Override
+    public void draw(TextGraphics textGraphics) {
+        level.draw(textGraphics);
+        player.draw(textGraphics);
+    }
+
+    public void setPlayerPosition(Point position) {
+        player.setPosition(position);
     }
 
     public void drawLevel(TextGraphics textGraphics) {
@@ -59,7 +65,6 @@ public class Environment {
         return false;
     }
 
-
     public boolean tryMovePlayerLeft() {
         Point position = player.getPosition();
         if (position.x - 1 >= 0 && isTileEmpty(Point.of(position.x - 1, position.y))) {
@@ -79,26 +84,13 @@ public class Environment {
         return false;
     }
 
-    private boolean isTileEmpty(Point point) {
+    public boolean isTileEmpty(Point point) {
         return level.getCellGrid()[point.x][point.y] == Level.PASSAGE;
     }
 
     public boolean isLevelDone() {
         return player.getPosition().equals(level.getExitPoint());
     }
-
-    public void newLevel() {
-        currentLevel++;
-        LevelBuilder levelBuilder = new LevelBuilder(
-                width,
-                height
-        );
-        level = levelBuilder.build(5, 0.4);
-        player.setPosition(generateRandomEmptyPoint());
-        // Player stats increase
-        //
-    }
-
 
 
     public Point generateRandomEmptyPoint() {

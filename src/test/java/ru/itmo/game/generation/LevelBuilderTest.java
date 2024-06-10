@@ -1,9 +1,6 @@
 package ru.itmo.game.generation;
 
 import org.junit.jupiter.api.Test;
-import ru.itmo.game.util.Environment;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class LevelBuilderTest {
 

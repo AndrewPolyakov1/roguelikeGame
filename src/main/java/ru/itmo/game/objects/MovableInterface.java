@@ -1,7 +1,7 @@
 package ru.itmo.game.objects;
 
-import ru.itmo.game.util.Environment;
+import ru.itmo.game.util.Enviroment;
 
 public interface MovableInterface {
-    void move(Environment environment);
+    void move(Enviroment enviroment);
 }

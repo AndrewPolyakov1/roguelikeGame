@@ -15,11 +15,11 @@ import lombok.Setter;
 import ru.itmo.game.generation.LevelBuilder;
 import ru.itmo.game.objects.Level;
 import ru.itmo.game.objects.Player;
-import ru.itmo.game.util.Environment;
+import ru.itmo.game.util.Enviroment;
+import ru.itmo.game.util.WorldState;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.Random;
 import java.util.logging.Logger;
 
 public class GameLoop {
@@ -28,7 +28,7 @@ public class GameLoop {
             .lookupClass()
             .getName());
 
-    private Environment environment;
+    private Enviroment enviroment;
 
     @Getter
     @Setter
@@ -72,14 +72,16 @@ public class GameLoop {
         );
         Level level = levelBuilder.build(5, 0.4);
 
-        Environment environment = new Environment(WIDTH, HEIGHT, level);
+        Enviroment enviroment = new Enviroment(WIDTH, HEIGHT, level);
         Player player = new Player(
                 10,
                 10,
                 1,
-                environment.generateRandomEmptyPoint()
+                enviroment.generateRandomEmptyPoint()
         );
-        environment.setPlayer(player);
+        enviroment.setPlayer(player);
+
+        WorldState world = new WorldState(enviroment);
 
         //
 
@@ -95,8 +97,7 @@ public class GameLoop {
 
             textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
 
-            environment.drawLevel(textGraphics);
-            environment.drawPlayer(textGraphics);
+            world.draw(textGraphics);
             ////////////////////////////
 
             screen.refresh();
@@ -108,15 +109,15 @@ public class GameLoop {
 
             KeyStroke keyStroke = screen.pollInput();
 
-            Signal signal = handleInput(keyStroke, environment);
+            Signal signal = handleInput(keyStroke, world);
             if (signal == Signal.QUIT){
                 interrupted = true;
             }
 
             // Player events
-                if (environment.isLevelDone()){
+                if (world.isLevelDone()){
                     log.info("Starting new level");
-                    environment.newLevel();
+                    world.newLevel();
                 }
             //
 
@@ -124,7 +125,7 @@ public class GameLoop {
 
             if (currentTime - lastUpdateTime >= 1000 / FPS) {
                 // Game events
-
+                world.update();
                 //
                 lastUpdateTime = currentTime;
             }
@@ -133,33 +134,34 @@ public class GameLoop {
         screen.stopScreen();
     }
 
-    private Signal handleInput(KeyStroke keyStroke, Environment environment) {
+    private Signal handleInput(KeyStroke keyStroke, WorldState worldState) {
+        Enviroment enviroment = worldState.enviroment;
         if (keyStroke != null) {
             if (keyStroke.getKeyType() == KeyType.ArrowDown) {
                 log.info("ArrowDown");
-                if (environment.tryMovePlayerDown()) {
+                if (enviroment.tryMovePlayerDown()) {
                     return Signal.MOVED_DOWN;
                 } else {
                     return Signal.NONE;
                 }
             } else if (keyStroke.getKeyType() == KeyType.ArrowLeft) {
                 log.info("ArrowLeft");
-                if (environment.tryMovePlayerLeft()) {
-                    return Signal.MOVED_DOWN;
+                if (enviroment.tryMovePlayerLeft()) {
+                    return Signal.MOVED_LEFT;
                 } else {
                     return Signal.NONE;
                 }
             } else if (keyStroke.getKeyType() == KeyType.ArrowRight) {
                 log.info("ArrowRight");
-                if (environment.tryMovePlayerRight()) {
-                    return Signal.MOVED_DOWN;
+                if (enviroment.tryMovePlayerRight()) {
+                    return Signal.MOVED_RIGHT;
                 } else {
                     return Signal.NONE;
                 }
             } else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
                 log.info("ArrowUp");
-                if (environment.tryMovePlayerUp()) {
-                    return Signal.MOVED_DOWN;
+                if (enviroment.tryMovePlayerUp()) {
+                    return Signal.MOVED_UP;
                 } else {
                     return Signal.NONE;
                 }
