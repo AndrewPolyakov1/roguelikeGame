@@ -25,16 +25,6 @@ public class Level implements Serializable, DrawableInterface {
     private final int height;
     private final boolean[][] cellGrid;
 
-    private Point getRandomEmptyPoint(){
-        int x, y;
-        do {
-            x = random.nextInt(width - 1);
-            y = random.nextInt(height - 1);
-        } while (cellGrid[x][y]);
-        return Point.of(x, y);
-
-    }
-
     //    private final List<Enemy> enemies;
     public Level(int width, int height, boolean[][] grid) {
         this.width = width;
@@ -46,8 +36,19 @@ public class Level implements Serializable, DrawableInterface {
     public Level() {
         this.width = 0;
         this.height = 0;
+
         cellGrid = new boolean[10][10];
         exitPoint = getRandomEmptyPoint();
+    }
+
+    private Point getRandomEmptyPoint() {
+        int x, y;
+        do {
+            x = random.nextInt(width - 1);
+            y = random.nextInt(height - 1);
+        } while (cellGrid[x][y]);
+        return Point.of(x, y);
+
     }
 
     public String toString() {

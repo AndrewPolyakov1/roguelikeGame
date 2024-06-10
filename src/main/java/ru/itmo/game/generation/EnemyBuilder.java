@@ -1,7 +1,7 @@
 package ru.itmo.game.generation;
 
 import ru.itmo.game.objects.Enemy;
-import ru.itmo.game.util.Environment;
+import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.Point;
 import ru.itmo.game.util.RandomUtil;
 
@@ -15,8 +15,8 @@ public class EnemyBuilder {
     public EnemyBuilder() {
     }
 
-    public Enemy buildRandomEnemy(Environment environment, int levelLimit) {
-        Point position = environment.generateRandomEmptyPoint();
+    public Enemy buildRandomEnemy(Enviroment enviroment, int levelLimit) {
+        Point position = enviroment.generateRandomEmptyPoint();
         Enemy.EnemyBehavior behavior = RandomUtil.randomEnum(Enemy.EnemyBehavior.class);
         Enemy.EnemyType type = RandomUtil.randomEnum(Enemy.EnemyType.class);
         int level = random.nextInt(1, levelLimit);
