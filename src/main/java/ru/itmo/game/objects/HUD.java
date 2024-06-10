@@ -1,12 +1,10 @@
 package ru.itmo.game.objects;
 
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import ru.itmo.game.drawable.Colours;
 import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.drawable.Symbols;
 import ru.itmo.game.util.Enviroment;
-import ru.itmo.game.util.Point;
 
 public class HUD implements DrawableInterface {
     private final int screenHeight;

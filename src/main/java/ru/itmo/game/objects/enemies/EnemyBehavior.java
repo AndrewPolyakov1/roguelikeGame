@@ -5,5 +5,5 @@ import ru.itmo.game.util.Point;
 import java.util.List;
 
 public interface EnemyBehavior {
-    List<Point> generatePathAttack(Enviroment env, Point possitionEnemy);
+    List<Point> generatePathAttack(Enviroment env, Point positionEnemy);
 }

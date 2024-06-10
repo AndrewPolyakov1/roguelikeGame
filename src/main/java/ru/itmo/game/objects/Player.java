@@ -9,18 +9,16 @@ import org.slf4j.LoggerFactory;
 import ru.itmo.game.drawable.Colours;
 import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.drawable.Symbols;
-import ru.itmo.game.util.HadlerEnemies;
+import ru.itmo.game.util.HandlerEnemies;
 import ru.itmo.game.util.Point;
 
 import java.util.List;
 
+@Setter
+@Getter
 public class Player extends BasePerson implements DrawableInterface {
     private static final Logger log = LoggerFactory.getLogger(Player.class);
-    @Setter
-    @Getter
     private int cooldown = 1000;
-    @Setter
-    @Getter
     private int experience = 0;
 
     public Player(int health, int damage, int level, Point position) {
@@ -43,7 +41,7 @@ public class Player extends BasePerson implements DrawableInterface {
         int counter = 0;
         for (Enemy enemy : enemyList) {
             if (System.currentTimeMillis() - getLastAttack() > cooldown &&
-                    HadlerEnemies.calculateDistance(this.position, enemy.getPosition()) < this.getAttackRadius()) {
+                    HandlerEnemies.calculateDistance(this.position, enemy.getPosition()) < this.getAttackRadius()) {
                 counter++;
                 enemy.setHealth(enemy.getHealth() - this.getDamage());
                 if (enemy.getHealth() <= 0) {

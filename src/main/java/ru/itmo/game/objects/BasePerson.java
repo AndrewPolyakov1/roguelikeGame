@@ -7,24 +7,14 @@ import ru.itmo.game.util.Point;
 
 import java.io.Serializable;
 
+@Setter
+@Getter
 public abstract class BasePerson implements Serializable {
-    @Getter
-    @Setter
     public int health;
-    @Getter
-    @Setter
     public int damage;
-    @Getter
-    @Setter
     public int level;
-    @Getter
-    @Setter
     public Point position;
-    @Getter
-    @Setter
     private int attackRadius = 4;
-    @Getter
-    @Setter
     private long lastAttack = System.currentTimeMillis();
 
     public BasePerson(@JsonProperty("health") int health, @JsonProperty("damage") int damage, @JsonProperty("level") int level, @JsonProperty("position") Point position) {

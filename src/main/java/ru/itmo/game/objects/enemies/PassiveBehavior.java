@@ -9,9 +9,9 @@ import java.util.List;
 public class PassiveBehavior implements EnemyBehavior {
 
     @Override
-    public List<Point> generatePathAttack(Enviroment env, Point possitionEnemy) {
+    public List<Point> generatePathAttack(Enviroment env, Point positionEnemy) {
         List<Point> path = new ArrayList<>();
-        path.add(possitionEnemy);
+        path.add(positionEnemy);
         return path;
     }
 }

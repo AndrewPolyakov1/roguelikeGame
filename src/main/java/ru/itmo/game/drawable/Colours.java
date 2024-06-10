@@ -2,6 +2,7 @@ package ru.itmo.game.drawable;
 
 import com.googlecode.lanterna.TextColor;
 
+@SuppressWarnings("unused")
 public class Colours {
     public static final TextColor.ANSI HUD = TextColor.ANSI.WHITE;
     public static final TextColor.ANSI ENEMY = TextColor.ANSI.RED;

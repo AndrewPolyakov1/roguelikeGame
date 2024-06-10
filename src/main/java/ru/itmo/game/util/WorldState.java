@@ -111,12 +111,8 @@ public class WorldState implements DrawableInterface {
     public boolean update() {
         moveAllEnemies();
         enemiesTryAttackPlayer();
-
-        if (environment.getPlayer().getHealth() < 0) {
-            return true;
-        }
-
-        return false;
+        // True if player is dead
+        return environment.getPlayer().getHealth() < 0;
     }
 
 

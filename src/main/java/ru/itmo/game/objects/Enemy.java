@@ -1,7 +1,6 @@
 package ru.itmo.game.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +9,7 @@ import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.drawable.Symbols;
 import ru.itmo.game.objects.enemies.EnemyBehavior;
 import ru.itmo.game.util.Enviroment;
-import ru.itmo.game.util.HadlerEnemies;
+import ru.itmo.game.util.HandlerEnemies;
 import ru.itmo.game.util.Point;
 
 import java.io.Serializable;
@@ -18,29 +17,27 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static ru.itmo.game.util.HadlerEnemies.findPathToClosestIdlePoint;
-import static ru.itmo.game.util.HadlerEnemies.heuristic;
-import static ru.itmo.game.util.HadlerEnemies.randomWalk;
+import static ru.itmo.game.util.HandlerEnemies.findPathToClosestIdlePoint;
+import static ru.itmo.game.util.HandlerEnemies.heuristic;
+import static ru.itmo.game.util.HandlerEnemies.randomWalk;
 
 public class Enemy extends BasePerson implements DrawableInterface, Serializable, AttackingInterface, MovableInterface {
     public static final Logger log = Logger.getLogger(MethodHandles
             .lookup()
             .lookupClass()
             .getName());
-    private final int steps = 50;
+    private static final int steps = 50;
+    //    private long lastAttack = System.currentTimeMillis();
+    private static final long cooldown = 1000;
     public EnemyType enemyType;
     public EnemyBehavior behavior;
     @Setter
     @Getter
-    private boolean isAlive = true;
+    private boolean isAlive;
     private List<Point> pathIdle;
-    private List<Point> pathAttack;
-    private List<Point> pathReturn;
     private int posIdle = 0;
     private int posAttack = 0;
     private int posReturn = 0;
-//    private long lastAttack = System.currentTimeMillis();
-    private long cooldown = 1000;
 
     public Enemy(@JsonProperty("EnemyType") EnemyType enemyType,
                  @JsonProperty("EnemyBehavior") EnemyBehavior behavior,
@@ -100,7 +97,7 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
             return;
         }
         if (heuristic(possitionPlayer, position) < 10) {
-            pathAttack = behavior.generatePathAttack(enviroment, position);
+            List<Point> pathAttack = behavior.generatePathAttack(enviroment, position);
             Point nextPoint = pathAttack.get(posAttack);
             if (enviroment.isTileEmpty(nextPoint)) {
                 position = nextPoint;
@@ -109,7 +106,7 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
         } else {
             if (!pathIdle.contains(position)) {
                 useReturnPath = true;
-                pathReturn = findPathToClosestIdlePoint(position, pathIdle, ceilGrid);
+                List<Point> pathReturn = findPathToClosestIdlePoint(position, pathIdle, ceilGrid);
                 Point nextPoint = pathReturn.get(posReturn);
                 if (enviroment.isTileEmpty(nextPoint)) {
                     position = nextPoint;
@@ -132,10 +129,10 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
     @Override
     public boolean canAttack(Enviroment enviroment) {
         return isAlive && (System.currentTimeMillis() - getLastAttack()) > cooldown &&
-                HadlerEnemies.calculateDistance(this.position, enviroment.getPlayer().getPosition()) < this.getAttackRadius();
+                HandlerEnemies.calculateDistance(this.position, enviroment.getPlayer().getPosition()) < this.getAttackRadius();
     }
 
-    public void die(){
+    public void die() {
         isAlive = false;
     }
 
@@ -144,18 +141,17 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
         if (!canAttack(enviroment)) {
             return;
         }
-        log.info(String.format("Enemy %s attacked player %s", this.toString(), enviroment.getPlayer().toString()));
+        log.info(String.format("Enemy %s attacked player %s", this, enviroment.getPlayer().toString()));
         enviroment.updatePlayerHealth(-this.damage);
         this.setLastAttack(System.currentTimeMillis());
     }
 
+    @Getter
     public enum EnemyType {
         VILLAGER(1),
         HEAVY(3),
         ;
-
-        @Getter
-        private int baseValue;
+        private final int baseValue;
 
         EnemyType(int baseValue) {
             this.baseValue = baseValue;

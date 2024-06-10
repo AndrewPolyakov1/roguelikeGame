@@ -20,16 +20,14 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.logging.Logger;
 
+@Setter
+@Getter
 public class GameLoop {
     public static final Logger log = Logger.getLogger(MethodHandles
             .lookup()
             .lookupClass()
             .getName());
 
-    private Enviroment enviroment;
-
-    @Getter
-    @Setter
     private int FPS = 5;
 
     public static void main(String[] args) {
@@ -104,10 +102,10 @@ public class GameLoop {
             if (signal == Signal.PAUSE) {
                 paused = true;
             }
-            if (signal == Signal.RESTART){
+            if (signal == Signal.RESTART) {
                 world.restart();
             }
-            if (signal == Signal.ATTACK){
+            if (signal == Signal.ATTACK) {
                 world.playerAttack();
             }
 
@@ -126,7 +124,7 @@ public class GameLoop {
                 world.newLevel();
             }
 
-            if (gameOver){
+            if (gameOver) {
                 screen.clear();
                 gameOver(WIDTH, HEIGHT, textGraphics);
                 screen.refresh();
@@ -189,12 +187,10 @@ public class GameLoop {
             ) {
                 log.info("Game Paused");
                 return Signal.PAUSE;
-            }
-            else if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'r'
+            } else if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'r'
             ) {
                 return Signal.RESTART;
-            }
-            else if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'e'
+            } else if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'e'
             ) {
                 log.info("Attack key pressed");
                 return Signal.ATTACK;
@@ -204,18 +200,6 @@ public class GameLoop {
         }
         return Signal.NONE;
 
-    }
-
-    enum Signal {
-        MOVED_DOWN,
-        MOVED_UP,
-        MOVED_LEFT,
-        MOVED_RIGHT,
-        QUIT,
-        NONE,
-        PAUSE,
-        RESTART,
-        ATTACK
     }
 
     public void pauseScreen(int width, int height, TextGraphics graphics) {
@@ -233,5 +217,17 @@ public class GameLoop {
         graphics.setForegroundColor(Colours.TEXT_COLOR);
         graphics.putString(width / 2 - (text.length() / 2), height / 2 - 1, text);
 
+    }
+
+    enum Signal {
+        MOVED_DOWN,
+        MOVED_UP,
+        MOVED_LEFT,
+        MOVED_RIGHT,
+        QUIT,
+        NONE,
+        PAUSE,
+        RESTART,
+        ATTACK
     }
 }

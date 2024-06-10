@@ -11,15 +11,11 @@ public class EnemyBehaviorFactory {
         Random random = new Random();
         int behaviorType = random.nextInt(3);
 
-        switch (behaviorType) {
-            case 0:
-                return new ScaredBehavior();
-            case 1:
-                return new PassiveBehavior();
-            case 2:
-                return new AgressiveBehavior();
-            default:
-                throw new IllegalStateException("Unexpected value: " + behaviorType);
-        }
+        return switch (behaviorType) {
+            case 0 -> new ScaredBehavior();
+            case 1 -> new PassiveBehavior();
+            case 2 -> new AgressiveBehavior();
+            default -> throw new IllegalStateException("Unexpected value: " + behaviorType);
+        };
     }
 }

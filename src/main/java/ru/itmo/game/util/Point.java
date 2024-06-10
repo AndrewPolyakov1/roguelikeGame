@@ -31,7 +31,7 @@ public class Point {
     }
 
     public boolean equals(Point other) {
-        return (((Point) other).x == this.x && ((Point) other).y == this.y);
+        return (other.x == this.x && other.y == this.y);
     }
 
     public static void main(String[] args) {

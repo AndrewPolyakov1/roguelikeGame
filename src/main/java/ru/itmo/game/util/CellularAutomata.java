@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 @Getter
+@SuppressWarnings("unused")
 public class CellularAutomata {
     public static final boolean WALL = true;
     public static final boolean PASSAGE = false;
@@ -47,6 +48,7 @@ public class CellularAutomata {
      * Returns the state of cell at (x, y).
      * Point coordOfCell must be within the boundaries of the cell grid (i.e. 0 <= x < width, 0 <= y < height).
      */
+
     public boolean getStateOfCell(Point coordOfCell) {
         return cellGrid[coordOfCell.x][coordOfCell.y];
     }
@@ -202,8 +204,8 @@ public class CellularAutomata {
      * If there are no caverns, then the list will be empty.
      */
     public ArrayList<ArrayList<Point>> findAllCaverns() {
-        ArrayList<Point> flooded = new ArrayList<Point>(); // list of points already flooded by the flood fill algorithm (points in found caverns)
-        ArrayList<ArrayList<Point>> caverns = new ArrayList<ArrayList<Point>>(); // list of found caverns
+        ArrayList<Point> flooded = new ArrayList<>(); // list of points already flooded by the flood fill algorithm (points in found caverns)
+        ArrayList<ArrayList<Point>> caverns = new ArrayList<>(); // list of found caverns
         // loop through every point in the cell grid
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
@@ -236,8 +238,8 @@ public class CellularAutomata {
         // 5. add point to flooded list
         // 6. remove point from toBeFlooded list
         // 7. repeat step 3
-        ArrayList<Point> toBeFlooded = new ArrayList<Point>();
-        ArrayList<Point> flooded = new ArrayList<Point>();
+        ArrayList<Point> toBeFlooded = new ArrayList<>();
+        ArrayList<Point> flooded = new ArrayList<>();
         toBeFlooded.add(initialPoint);
         while (!toBeFlooded.isEmpty()) {
             int x = toBeFlooded.getFirst().x;
@@ -265,14 +267,14 @@ public class CellularAutomata {
     }
 
     /*
-     * Finds the biggest cavern (cavern with biggest area, i.e. the most passageways) and return list of all points within it.
+     * Finds the biggest cavern (cavern with the biggest area, i.e. the most passageways) and return list of all points within it.
      * If two caverns are both the biggest and have equal area, then only one of them is returned.
      * If there are no caverns in the cell grid, then it returns null.
      */
     public ArrayList<Point> findBiggestCavern() {
         ArrayList<ArrayList<Point>> caverns = findAllCaverns();
-        ArrayList<Point> biggestCavern = new ArrayList<Point>();
-        // find biggest cavern from list of caverns (if two caverns are both the biggest and have equal area, then only one of them is found)
+        ArrayList<Point> biggestCavern = new ArrayList<>();
+        // find the biggest cavern from list of caverns (if two caverns are both the biggest and have equal area, then only one of them is found)
         for (ArrayList<Point> cavern : caverns) {
             if (cavern.size() > biggestCavern.size()) {
                 biggestCavern = cavern;

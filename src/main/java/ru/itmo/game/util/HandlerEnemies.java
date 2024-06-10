@@ -1,8 +1,8 @@
 package ru.itmo.game.util;
 
 import java.util.*;
-
-public class HadlerEnemies {
+@SuppressWarnings("unused")
+public class HandlerEnemies {
     public static List<Point> findFreeCells(boolean[][] grid) {
         List<Point> freeCells = new ArrayList<>();
         for (int i = 0; i < grid.length; i++) {
@@ -37,7 +37,7 @@ public class HadlerEnemies {
             steps--;
         }
 
-        while (!path.get(0).equals(currentCell)) {
+        while (!path.getFirst().equals(currentCell)) {
             List<Point> neighbors = getNeighbors(grid, currentCell);
             if (neighbors.isEmpty()) {
                 break;
@@ -179,9 +179,9 @@ public class HadlerEnemies {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan distance
     }
 
-    public static List<Point> pathEscapeFinding(boolean[][] ceilGrid, Point possitionEnemy, Point possPlayer) {
+    public static List<Point> pathEscapeFinding(boolean[][] ceilGrid, Point positionEnemy, Point possPlayer) {
         List<Point> path = new ArrayList<>();
-        path.add(possitionEnemy);
+        path.add(positionEnemy);
 
         Point bestMove = null;
         double maxDistance = -1;
@@ -194,8 +194,8 @@ public class HadlerEnemies {
         };
 
         for (int[] direction : directions) {
-            int newX = possitionEnemy.x + direction[0];
-            int newY = possitionEnemy.y + direction[1];
+            int newX = positionEnemy.x + direction[0];
+            int newY = positionEnemy.y + direction[1];
 
             if (newX >= 0 && newY >= 0 && newX < ceilGrid.length && newY < ceilGrid[0].length && !(ceilGrid[newX][newY])) {
                 Point newPoint = new Point(newX, newY);
@@ -215,9 +215,9 @@ public class HadlerEnemies {
         return path;
     }
 
-    public static List<Point> pathAttackFinding(boolean[][] ceilGrid, Point possitionEnemy, Point possPlayer) {
+    public static List<Point> pathAttackFinding(boolean[][] ceilGrid, Point positionEnemy, Point possPlayer) {
         List<Point> path = new ArrayList<>();
-        path.add(possitionEnemy);
+        path.add(positionEnemy);
 
         Point bestMove = null;
         double minDistance = Double.MAX_VALUE;
@@ -230,8 +230,8 @@ public class HadlerEnemies {
         };
 
         for (int[] direction : directions) {
-            int newX = possitionEnemy.x + direction[0];
-            int newY = possitionEnemy.y + direction[1];
+            int newX = positionEnemy.x + direction[0];
+            int newY = positionEnemy.y + direction[1];
 
             if (newX >= 0 && newY >= 0 && newX < ceilGrid.length && newY < ceilGrid[0].length && !(ceilGrid[newX][newY])) {
                 Point newPoint = new Point(newX, newY);
