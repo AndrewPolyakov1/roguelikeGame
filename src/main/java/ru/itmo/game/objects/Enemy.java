@@ -13,8 +13,7 @@ import ru.itmo.game.util.Point;
 import java.io.Serializable;
 import java.util.List;
 
-import static ru.itmo.game.util.HadlerEnemies.heuristic;
-import static ru.itmo.game.util.HadlerEnemies.randomWalk;
+import static ru.itmo.game.util.HadlerEnemies.*;
 
 public class Enemy extends BasePerson implements DrawableInterface, Serializable, MovableInterface {
 
@@ -24,9 +23,11 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
     private boolean isAlive = true;
     private List<Point> pathIdle;
     private List<Point> pathAttack;
+    private List<Point> pathReturn;
     private final int steps = 50;
     private int posIdle = 0;
     private int posAttack = 0;
+    private int posReturn = 0;
 
     public Enemy(@JsonProperty("EnemyType") EnemyType enemyType,
                  @JsonProperty("EnemyBehavior") EnemyBehavior behavior,
@@ -77,6 +78,8 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
     @Override
     public void move(Enviroment enviroment) {
         Point possitionPlayer = enviroment.getPlayer().getPosition();
+        boolean[][] ceilGrid = enviroment.getLevel().getCellGrid();
+        boolean useReturnPath = false;
         if (!isAlive) {
             return;
         }
@@ -91,11 +94,25 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
              }
              posAttack = (posAttack + 1) % pathAttack.size();
         } else {
-            Point nextPoint = pathIdle.get(posIdle);
-            if (enviroment.isTileEmpty(nextPoint)) {
-                position = nextPoint;
+            if (!pathIdle.contains(position)){
+                useReturnPath = true;
+                pathReturn = findPathToClosestIdlePoint(position, pathIdle, ceilGrid);
+                Point nextPoint = pathReturn.get(posReturn);
+                if (enviroment.isTileEmpty(nextPoint)) {
+                    position = nextPoint;
+                }
+                posReturn = (posReturn + 1) % pathReturn.size();
+            } else {
+                if (useReturnPath){
+                    posIdle = pathIdle.indexOf(position);
+                }
+                Point nextPoint = pathIdle.get(posIdle);
+                if (enviroment.isTileEmpty(nextPoint)) {
+                    position = nextPoint;
+                }
+                posIdle = (posIdle + 1) % pathIdle.size();
+//                System.out.println(posIdle);
             }
-            posIdle = (posIdle + 1) % pathIdle.size();
         }
     }
 

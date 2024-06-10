@@ -251,6 +251,64 @@ public class HadlerEnemies {
         return path;
     }
 
+    public static List<Point> findPathToClosestIdlePoint(Point position, List<Point> pathIdle, boolean[][] ceilGrid) {
+        Point closestPoint = null;
+        double minDistance = Double.MAX_VALUE;
+
+        for (Point idlePoint : pathIdle) {
+            double distance = calculateDistance(position, idlePoint);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestPoint = idlePoint;
+            }
+        }
+
+        if (closestPoint == null) {
+            return new ArrayList<>();
+        }
+
+        List<Point> path = new ArrayList<>();
+        path.add(position);
+
+        Point nextStep = getNextStepTowards(position, closestPoint, ceilGrid);
+        System.out.println(nextStep);
+        if (nextStep != null) {
+            path.add(nextStep);
+        }
+
+        return path;
+    }
+
+    private static Point getNextStepTowards(Point position, Point target, boolean[][] ceilGrid) {
+        Point bestMove = null;
+        double minDistance = Double.MAX_VALUE;
+
+        int[][] directions = {
+                {-1, 0}, // ?????
+                {1, 0},  // ????
+                {0, -1}, // ?????
+                {0, 1}   // ??????
+        };
+
+        for (int[] direction : directions) {
+            int newX = position.x + direction[0];
+            int newY = position.y + direction[1];
+
+            if (newX >= 0 && newY >= 0 && newX < ceilGrid.length && newY < ceilGrid[0].length && !(ceilGrid[newX][newY])) {
+                Point newPoint = new Point(newX, newY);
+                double distance = calculateDistance(newPoint, target);
+
+                // ???? ????? ? ??????????? ??????????? ?? ????
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    bestMove = newPoint;
+                }
+            }
+        }
+
+        return bestMove;
+    }
+
     private static double calculateDistance(Point a, Point b) {
         int dx = a.x - b.x;
         int dy = a.y - b.y;
