@@ -29,7 +29,7 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
             .getName());
     private static final int steps = 50;
     //    private long lastAttack = System.currentTimeMillis();
-    private static final long cooldown = 1000;
+    private static final long cooldown = 500;
     public EnemyType enemyType;
     public EnemyBehavior behavior;
     @Setter
