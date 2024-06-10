@@ -38,6 +38,7 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
     private int posIdle = 0;
     private int posAttack = 0;
     private int posReturn = 0;
+    boolean useReturnPath = false;
 
     public Enemy(@JsonProperty("EnemyType") EnemyType enemyType,
                  @JsonProperty("EnemyBehavior") EnemyBehavior behavior,
@@ -89,7 +90,6 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
     public void move(Enviroment enviroment) {
         Point possitionPlayer = enviroment.getPlayer().getPosition();
         boolean[][] ceilGrid = enviroment.getLevel().getCellGrid();
-        boolean useReturnPath = false;
         if (!isAlive) {
             return;
         }
@@ -121,7 +121,7 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
                     position = nextPoint;
                 }
                 posIdle = (posIdle + 1) % pathIdle.size();
-//                System.out.println(posIdle);
+                useReturnPath = false;
             }
         }
     }
