@@ -9,8 +9,9 @@ import ru.itmo.game.util.Enviroment;
 public class HUD implements DrawableInterface {
     private final int screenHeight;
     private final int screenWidth;
-    public static final int hudHeight = 3;
+    public static final int hudHeight = 5;
     private static final int heightOffset = 1;
+    private static final int heightInventoryOffset = 3;
     private static final int widthOffsetLeft = 2;
     private static final int widthOffsetRight = 30;
     private final Enviroment enviroment;
@@ -42,5 +43,9 @@ public class HUD implements DrawableInterface {
                         enviroment.getPlayer().getExperience()
                 )
         );
+
+        int vInventoryPosition = screenHeight - hudHeight + heightInventoryOffset;
+        String inventory = "[ " + enviroment.getPlayer().getInventory().toString() + " ]";
+        textGraphics.putString(widthOffsetLeft, vInventoryPosition, inventory);
     }
 }

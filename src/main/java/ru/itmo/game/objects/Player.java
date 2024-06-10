@@ -10,6 +10,8 @@ import ru.itmo.game.drawable.Colours;
 import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.drawable.Symbols;
 import ru.itmo.game.util.HandlerEnemies;
+import ru.itmo.game.util.Inventory;
+import ru.itmo.game.util.Item;
 import ru.itmo.game.util.Point;
 
 import java.util.List;
@@ -20,6 +22,7 @@ public class Player extends BasePerson implements DrawableInterface {
     private static final Logger log = LoggerFactory.getLogger(Player.class);
     private int cooldown = 1000;
     private int experience = 0;
+    private Inventory inventory = new Inventory(List.of(Item.createRandomItem(1), Item.createRandomItem(1), Item.createRandomItem(1)));
 
     public Player(int health, int damage, int level, Point position) {
         super(health, damage, level, position);
@@ -43,7 +46,7 @@ public class Player extends BasePerson implements DrawableInterface {
 
     public void attack(List<Enemy> enemyList) {
         int counter = 0;
-        if (System.currentTimeMillis() - getLastAttack() < cooldown){
+        if (System.currentTimeMillis() - getLastAttack() < cooldown) {
             return;
         }
         for (Enemy enemy : enemyList) {
@@ -72,6 +75,20 @@ public class Player extends BasePerson implements DrawableInterface {
             experience -= level * 100;
             level += 1;
         }
+    }
+
+    public void addItem(Item item) {
+        inventory.addItem(item);
+    }
+
+    public void useItem(int Index) {
+        Item item = inventory.useItem(Index);
+        switch (item.type()) {
+            case Item.ItemType.HEALTH -> setHealth(getHealth() + item.level());
+            case Item.ItemType.DAMAGE -> setDamage(getDamage() + item.level());
+            case Item.ItemType.COOLDOWN -> setCooldown(getCooldown() - 10 * item.level());
+        }
+
     }
 
 }

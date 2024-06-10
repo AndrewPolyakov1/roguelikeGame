@@ -26,6 +26,7 @@ public class Enviroment implements DrawableInterface {
     private int width;
     @Getter
     private int height;
+
     public Enviroment(int width, int height, Level level) {
         this.width = width;
         this.height = height;
@@ -53,6 +54,7 @@ public class Enviroment implements DrawableInterface {
     public void updatePlayerDamage(int increment) {
         player.setDamage(player.getDamage() + increment);
     }
+
     public void updatePlayerExperience(int increment) {
         player.updateExperience(increment);
     }
