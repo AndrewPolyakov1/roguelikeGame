@@ -86,7 +86,6 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
         if (heuristic(possitionPlayer, position) < 10){
              pathAttack = behavior.generatePathAttack(enviroment, position);
              Point nextPoint = pathAttack.get(posAttack);
-             System.out.println(nextPoint);
              if (enviroment.isTileEmpty(nextPoint)) {
                 position = nextPoint;
              }

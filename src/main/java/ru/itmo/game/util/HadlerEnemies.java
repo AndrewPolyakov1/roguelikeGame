@@ -178,4 +178,46 @@ public class HadlerEnemies {
     public static double heuristic(Point a, Point b) {
         return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan distance
     }
+
+    public static List<Point> pathEscapeFinding(boolean[][] ceilGrid, Point possitionEnemy, Point possPlayer) {
+        List<Point> path = new ArrayList<>();
+        path.add(possitionEnemy);
+
+        Point bestMove = null;
+        double maxDistance = -1;
+
+        int[][] directions = {
+                {-1, 0},
+                {1, 0},
+                {0, -1},
+                {0, 1}
+        };
+
+        for (int[] direction : directions) {
+            int newX = possitionEnemy.x + direction[0];
+            int newY = possitionEnemy.y + direction[1];
+
+            if (newX >= 0 && newY >= 0 && newX < ceilGrid.length && newY < ceilGrid[0].length && !(ceilGrid[newX][newY])) {
+                Point newPoint = new Point(newX, newY);
+                double distance = calculateDistance(newPoint, possPlayer);
+
+                if (distance > maxDistance) {
+                    maxDistance = distance;
+                    bestMove = newPoint;
+                }
+            }
+        }
+
+        if (bestMove != null) {
+            path.add(bestMove);
+        }
+
+        return path;
+    }
+
+    private static double calculateDistance(Point a, Point b) {
+        int dx = a.x - b.x;
+        int dy = a.y - b.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
 }
