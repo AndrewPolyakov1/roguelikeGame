@@ -36,7 +36,7 @@ public class Main {
                 try {
                     /*
                     The close() call here will restore the terminal by exiting from private mode which was done in
-                    the call to startScreen(), and also restore things like echo mode and intr
+                    the call to startScreen(), and also restore things like echo mode
                      */
                     screen.close();
                 } catch (IOException e) {

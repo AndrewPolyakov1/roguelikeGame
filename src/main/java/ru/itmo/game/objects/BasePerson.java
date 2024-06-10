@@ -14,8 +14,8 @@ public abstract class BasePerson implements Serializable {
     public int damage;
     public int level;
     public Point position;
-    private int attackRadius = 4;
-    private long lastAttack = System.currentTimeMillis();
+    private int attackRadius = 2;
+    private long lastAttack = 0;
 
     public BasePerson(@JsonProperty("health") int health, @JsonProperty("damage") int damage, @JsonProperty("level") int level, @JsonProperty("position") Point position) {
         this.health = health;

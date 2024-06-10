@@ -82,6 +82,13 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
             return;
         }
         textGraphics.setForegroundColor(Colours.ENEMY);
+        if (System.currentTimeMillis() - getLastAttack() < 100) {
+            textGraphics.setBackgroundColor(Colours.ENEMY_AOE);
+            List<Point> aoe = Point.getOffsetsInRadius(position, getAttackRadius());
+            for (Point point : aoe) {
+                textGraphics.putString(point.x, point.y, " ");
+            }
+        }
         textGraphics.putString(position.x, position.y, Symbols.ENEMY);
         textGraphics.setForegroundColor(Colours.DEFAULT);
     }

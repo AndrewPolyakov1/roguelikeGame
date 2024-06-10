@@ -29,7 +29,11 @@ public class Player extends BasePerson implements DrawableInterface {
     public void draw(TextGraphics textGraphics) {
         textGraphics.setForegroundColor(Colours.PLAYER);
         if (System.currentTimeMillis() - getLastAttack() < 100) {
-            textGraphics.setBackgroundColor(TextColor.ANSI.BLUE);
+            textGraphics.setBackgroundColor(Colours.PLAYER_AOE);
+            List<Point> aoe = Point.getOffsetsInRadius(position, getAttackRadius());
+            for (Point point : aoe) {
+                textGraphics.putString(point.x, point.y, " ");
+            }
         }
         textGraphics.putString(position.x, position.y, Symbols.PLAYER);
         textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
@@ -39,9 +43,11 @@ public class Player extends BasePerson implements DrawableInterface {
 
     public void attack(List<Enemy> enemyList) {
         int counter = 0;
+        if (System.currentTimeMillis() - getLastAttack() < cooldown){
+            return;
+        }
         for (Enemy enemy : enemyList) {
-            if (System.currentTimeMillis() - getLastAttack() > cooldown &&
-                    HandlerEnemies.calculateDistance(this.position, enemy.getPosition()) < this.getAttackRadius()) {
+            if (HandlerEnemies.calculateDistance(this.position, enemy.getPosition()) < this.getAttackRadius()) {
                 counter++;
                 enemy.setHealth(enemy.getHealth() - this.getDamage());
                 if (enemy.getHealth() <= 0) {
