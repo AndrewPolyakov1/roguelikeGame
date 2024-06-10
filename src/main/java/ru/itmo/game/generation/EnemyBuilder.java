@@ -5,6 +5,7 @@ import ru.itmo.game.objects.enemies.AgressiveBehavior;
 import ru.itmo.game.objects.enemies.EnemyBehavior;
 import ru.itmo.game.objects.enemies.PassiveBehavior;
 import ru.itmo.game.objects.enemies.ScaredBehavior;
+import ru.itmo.game.util.EnemyBehaviorFactory;
 import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.Point;
 import ru.itmo.game.util.RandomUtil;
@@ -21,8 +22,7 @@ public class EnemyBuilder {
 
     public Enemy buildRandomEnemy(Enviroment enviroment, int levelLimit) {
         Point position = enviroment.generateRandomEmptyPoint();
-        //??????? ?????? ?? ???????
-        EnemyBehavior behavior = new AgressiveBehavior();
+        EnemyBehavior behavior = EnemyBehaviorFactory.getRandomBehavior();
         Enemy.EnemyType type = RandomUtil.randomEnum(Enemy.EnemyType.class);
         int level = random.nextInt(1, levelLimit);
         Enemy enemy = new Enemy(
