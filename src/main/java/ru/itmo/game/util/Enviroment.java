@@ -15,6 +15,7 @@ import java.util.Random;
 public class Enviroment implements DrawableInterface {
     private final Random random = new Random();
     @Setter
+    @Getter
     private Player player;
     @Getter
     @Setter

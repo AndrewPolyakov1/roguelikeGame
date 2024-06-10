@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.itmo.game.objects.Enemy;
 import ru.itmo.game.objects.Level;
+import ru.itmo.game.objects.enemies.AgressiveBehavior;
 import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.Point;
 
@@ -25,7 +26,7 @@ class SerializerTest {
         };
         List<Enemy> enemies = List.of(new Enemy(
                 Enemy.EnemyType.VILLAGER,
-                Enemy.EnemyBehavior.PASSIVE,
+                new AgressiveBehavior(),
                 10,
                 20,
                 1,

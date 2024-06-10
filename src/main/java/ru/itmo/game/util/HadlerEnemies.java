@@ -15,7 +15,7 @@ public class HadlerEnemies {
         return freeCells;
     }
 
-    public static List<Point> randomWalk(boolean[][] grid, int steps) {
+    public static List<Point> randomWalk(boolean[][] grid, Point src, int steps) {
         List<Point> freeCells = findFreeCells(grid);
         Random random = new Random();
 
@@ -23,7 +23,7 @@ public class HadlerEnemies {
             return Collections.emptyList();
         }
 
-        Point currentCell = freeCells.get(random.nextInt(freeCells.size()));
+        Point currentCell = src;
         List<Point> path = new ArrayList<>();
         path.add(currentCell);
 
@@ -84,7 +84,7 @@ public class HadlerEnemies {
         }
     }
 
-    public static List<Point> findPath(boolean[][] grid, Point mob, Point player) {
+    public static List<Point> pathFinding(boolean[][] grid, Point mob, Point player) {
         int n = grid.length;
         int m = grid[0].length;
         int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
@@ -100,7 +100,7 @@ public class HadlerEnemies {
             Point current = queue.poll();
 
             if (current.x == player.x && current.y == player.y) {
-                return reconstructPath(parent, player);
+                return reconstructPath1(parent, player);
             }
 
             for (int[] dir : directions) {
@@ -118,12 +118,64 @@ public class HadlerEnemies {
         return Collections.emptyList(); // ???? ????? ?? ?????
     }
 
-    private static List<Point> reconstructPath(Point[][] parent, Point end) {
+    private static List<Point> reconstructPath1(Point[][] parent, Point end) {
         List<Point> path = new ArrayList<>();
         for (Point at = end; at != null; at = parent[at.x][at.y]) {
             path.add(at);
         }
         Collections.reverse(path);
         return path;
+    }
+
+    private List<Point> Pathfinding(Point start, Point end, boolean[][] grid) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+        boolean[][] visited = new boolean[rows][cols];
+        Point[][] parent = new Point[rows][cols];
+
+        Queue<Point> queue = new LinkedList<>();
+        queue.add(start);
+        visited[start.x][start.y] = true;
+
+        int[] dirX = {-1, 1, 0, 0};
+        int[] dirY = {0, 0, -1, 1};
+
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+
+            if (current.equals(end)) {
+                return reconstructPath(parent, end);
+            }
+
+            for (int i = 0; i < 4; i++) {
+                int newX = current.x + dirX[i];
+                int newY = current.y + dirY[i];
+
+                if (isValidMove(newX, newY, rows, cols, grid, visited)) {
+                    queue.add(new Point(newX, newY));
+                    visited[newX][newY] = true;
+                    parent[newX][newY] = current;
+                }
+            }
+        }
+
+        return new ArrayList<>();
+    }
+
+    private boolean isValidMove(int x, int y, int rows, int cols, boolean[][] grid, boolean[][] visited) {
+        return x >= 0 && x < rows && y >= 0 && y < cols && grid[x][y] && !visited[x][y];
+    }
+
+    public static List<Point> reconstructPath(Point[][] parent, Point end) {
+        List<Point> path = new ArrayList<>();
+        for (Point at = end; at != null; at = parent[at.x][at.y]) {
+            path.add(at);
+        }
+        Collections.reverse(path);
+        return path;
+    }
+
+    public static double heuristic(Point a, Point b) {
+        return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan distance
     }
 }

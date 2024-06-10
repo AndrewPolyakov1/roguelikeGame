@@ -6,12 +6,14 @@ import com.googlecode.lanterna.graphics.TextGraphics;
 import lombok.Getter;
 import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.drawable.Symbols;
+import ru.itmo.game.objects.enemies.EnemyBehavior;
 import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.Point;
 
 import java.io.Serializable;
 import java.util.List;
 
+import static ru.itmo.game.util.HadlerEnemies.heuristic;
 import static ru.itmo.game.util.HadlerEnemies.randomWalk;
 
 public class Enemy extends BasePerson implements DrawableInterface, Serializable, MovableInterface {
@@ -21,8 +23,10 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
     public EnemyBehavior behavior;
     private boolean isAlive = true;
     private List<Point> pathIdle;
+    private List<Point> pathAttack;
     private final int steps = 50;
-    private int pos = 0;
+    private int posIdle = 0;
+    private int posAttack = 0;
 
     public Enemy(@JsonProperty("EnemyType") EnemyType enemyType,
                  @JsonProperty("EnemyBehavior") EnemyBehavior behavior,
@@ -41,7 +45,7 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
 
     private void generatePathIdle(Point src, Enviroment env) {
         boolean[][] cellGrid = env.getLevel().getCellGrid();
-        pathIdle = randomWalk(cellGrid, steps);
+        pathIdle = randomWalk(cellGrid, src, steps);
     }
 
     @Override
@@ -72,17 +76,28 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
 
     @Override
     public void move(Enviroment enviroment) {
+        Point possitionPlayer = enviroment.getPlayer().getPosition();
         if (!isAlive) {
             return;
         }
         if (pathIdle == null || pathIdle.isEmpty()) {
             return;
         }
-        Point nextPoint = pathIdle.get(pos);
-        if (enviroment.isTileEmpty(nextPoint)) {
-            position = nextPoint;
+        if (heuristic(possitionPlayer, position) < 10){
+             pathAttack = behavior.generatePathAttack(enviroment, position);
+             Point nextPoint = pathAttack.get(posAttack);
+             System.out.println(nextPoint);
+             if (enviroment.isTileEmpty(nextPoint)) {
+                position = nextPoint;
+             }
+             posAttack = (posAttack + 1) % pathAttack.size();
+        } else {
+            Point nextPoint = pathIdle.get(posIdle);
+            if (enviroment.isTileEmpty(nextPoint)) {
+                position = nextPoint;
+            }
+            posIdle = (posIdle + 1) % pathIdle.size();
         }
-        pos = (pos + 1) % pathIdle.size();
     }
 
     public enum EnemyType {
@@ -97,11 +112,5 @@ public class Enemy extends BasePerson implements DrawableInterface, Serializable
             this.baseValue = baseValue;
         }
 
-    }
-
-    public enum EnemyBehavior {
-        AGGRESSIVE,
-        SCARED,
-        PASSIVE;
     }
 }
