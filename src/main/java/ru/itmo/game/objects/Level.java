@@ -4,6 +4,7 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import lombok.Getter;
 import lombok.Setter;
+import ru.itmo.game.drawable.Colours;
 import ru.itmo.game.drawable.DrawableInterface;
 import ru.itmo.game.drawable.Symbols;
 import ru.itmo.game.util.Point;
@@ -76,10 +77,8 @@ public class Level implements Serializable, DrawableInterface {
                 }
             }
         }
-        textGraphics.setForegroundColor(TextColor.ANSI.RED);
-//        textGraphics.setBackgroundColor(TextColor.ANSI.BLUE);
+        textGraphics.setForegroundColor(Colours.EXIT);
         textGraphics.putString(exitPoint.x, exitPoint.y, Symbols.EXIT);
         textGraphics.setForegroundColor(TextColor.ANSI.GREEN);
-//        textGraphics.setBackgroundColor(TextColor.ANSI.BLUE);
     }
 }

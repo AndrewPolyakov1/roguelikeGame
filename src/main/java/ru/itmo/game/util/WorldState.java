@@ -46,6 +46,10 @@ public class WorldState implements DrawableInterface {
         initializeEnemyList(random.nextInt(1, 4 * currentLevel));
     }
 
+    public void useItem(int index) {
+        environment.useItem(index);
+    }
+
     public Enviroment initializeEnvironment(int WIDTH, int HEIGHT) {
         LevelBuilder levelBuilder = new LevelBuilder(
                 WIDTH,

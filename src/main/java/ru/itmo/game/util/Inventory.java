@@ -21,8 +21,11 @@ public class Inventory {
     }
 
     public Item useItem(int index) {
-        Item item = items.get(index);
-        items.remove(index);
+        if (index > items.size()){
+            return null;
+        }
+        Item item = items.get(index - 1);
+        items.remove(index - 1);
         return item;
     }
 

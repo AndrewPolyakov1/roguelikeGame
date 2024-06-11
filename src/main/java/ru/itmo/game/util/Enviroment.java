@@ -112,6 +112,10 @@ public class Enviroment implements DrawableInterface {
         return player.getPosition().equals(level.getExitPoint());
     }
 
+    public void useItem(int index) {
+        player.tryUseItem(index);
+    }
+
 
     public Point generateRandomEmptyPoint() {
         int x, y;

@@ -14,6 +14,7 @@ import ru.itmo.game.util.Inventory;
 import ru.itmo.game.util.Item;
 import ru.itmo.game.util.Point;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -22,10 +23,12 @@ public class Player extends BasePerson implements DrawableInterface {
     private static final Logger log = LoggerFactory.getLogger(Player.class);
     private int cooldown = 1000;
     private int experience = 0;
-    private Inventory inventory = new Inventory(List.of(Item.createRandomItem(1), Item.createRandomItem(1), Item.createRandomItem(1)));
+    private Inventory inventory;
 
     public Player(int health, int damage, int level, Point position) {
         super(health, damage, level, position);
+        List<Item> items = new ArrayList<>(List.of(Item.createRandomItem(1), Item.createRandomItem(1), Item.createRandomItem(1)));
+        inventory = new Inventory(items);
     }
 
     @Override
@@ -81,13 +84,19 @@ public class Player extends BasePerson implements DrawableInterface {
         inventory.addItem(item);
     }
 
-    public void useItem(int Index) {
-        Item item = inventory.useItem(Index);
+    public void tryUseItem(int index) {
+        Item item = inventory.useItem(index);
+        if (item == null){
+            log.info("Not available");
+            return;
+        }
         switch (item.type()) {
             case Item.ItemType.HEALTH -> setHealth(getHealth() + item.level());
             case Item.ItemType.DAMAGE -> setDamage(getDamage() + item.level());
             case Item.ItemType.COOLDOWN -> setCooldown(getCooldown() - 10 * item.level());
         }
+        log.info("Item {} used", index);
+
 
     }
 

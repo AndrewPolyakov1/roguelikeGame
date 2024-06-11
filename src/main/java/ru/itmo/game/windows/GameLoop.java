@@ -108,6 +108,15 @@ public class GameLoop {
             if (signal == Signal.ATTACK) {
                 world.playerAttack();
             }
+            if (
+                    signal == Signal.ITEM_1 ||
+                    signal == Signal.ITEM_2 ||
+                    signal == Signal.ITEM_3 ||
+                    signal == Signal.ITEM_4 ||
+                    signal == Signal.ITEM_5
+            ){
+                world.useItem(signal.getNumber());
+            }
 
             if (paused) {
 
@@ -197,6 +206,30 @@ public class GameLoop {
             ) {
                 log.info("Attack key pressed");
                 return Signal.ATTACK;
+            } else if (keyStroke.getKeyType() == KeyType.Character && Character.isDigit(keyStroke.getCharacter())
+            ) {
+                log.info("Item use key pressed");
+                switch (keyStroke.getCharacter()){
+                    case '1' -> {
+                        return Signal.ITEM_1;
+                    }
+                    case '2' -> {
+                        return Signal.ITEM_2;
+                    }
+                    case '3' -> {
+                        return Signal.ITEM_3;
+                    }
+                    case '4' -> {
+                        return Signal.ITEM_4;
+                    }
+                    case '5' -> {
+                        return Signal.ITEM_5;
+                    }
+                    default -> {
+                        return Signal.NONE;
+                    }
+
+                }
             }
 
 
@@ -235,6 +268,7 @@ public class GameLoop {
         graphics.putString(width / 2 - (text2.length() / 2), height / 2, text2);
     }
 
+    @Getter
     enum Signal {
         MOVED_DOWN,
         MOVED_UP,
@@ -244,6 +278,21 @@ public class GameLoop {
         NONE,
         PAUSE,
         RESTART,
-        ATTACK
+        ATTACK,
+        ITEM_1(1),
+        ITEM_2(2),
+        ITEM_3(3),
+        ITEM_4(4),
+        ITEM_5(5)
+        ;
+        private int number;
+
+        Signal(int number) {
+            this.number = number;
+        }
+
+        Signal() {
+        }
+
     }
 }
