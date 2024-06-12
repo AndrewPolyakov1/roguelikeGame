@@ -13,5 +13,4 @@ public class Colours {
     public static final TextColor.ANSI BACKGROUND_DEFAULT = TextColor.ANSI.DEFAULT;
     public static final TextColor.ANSI EXIT = TextColor.ANSI.WHITE;
     public static final TextColor.ANSI TEXT_COLOR = TextColor.ANSI.WHITE;
-
 }

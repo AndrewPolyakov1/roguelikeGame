@@ -16,6 +16,8 @@ import ru.itmo.game.util.Point;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
 
 @Setter
 @Getter
@@ -24,6 +26,7 @@ public class Player extends BasePerson implements DrawableInterface {
     private int cooldown = 1000;
     private int experience = 0;
     private Inventory inventory;
+    private final Random random = new Random();
 
     public Player(int health, int damage, int level, Point position) {
         super(health, damage, level, position);
@@ -59,6 +62,9 @@ public class Player extends BasePerson implements DrawableInterface {
                 if (enemy.getHealth() <= 0) {
                     enemy.die();
                     updateExperience(enemy);
+                    if (random.nextFloat(0, 1) <= 0.3){
+                        addItem(Item.createRandomItem(enemy.getLevel()));
+                    }
                 }
             }
         }
