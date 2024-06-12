@@ -37,7 +37,7 @@ public class HandlerEnemies {
             steps--;
         }
 
-        while (!path.getFirst().equals(currentCell)) {
+        while (!path.get(0).equals(currentCell)) {
             List<Point> neighbors = getNeighbors(grid, currentCell);
             if (neighbors.isEmpty()) {
                 break;

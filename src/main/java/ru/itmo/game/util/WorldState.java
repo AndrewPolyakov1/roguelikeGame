@@ -24,12 +24,12 @@ public class WorldState implements DrawableInterface {
             .lookupClass()
             .getName());
     private final Random random = new Random();
+    @Getter
     public Enviroment environment;
     @Getter
     private int currentLevel;
     @Setter
     private List<Enemy> enemyList;
-
     private HUD hud;
 
     public WorldState(int WIDTH, int HEIGHT) {

@@ -5,7 +5,6 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
@@ -15,6 +14,8 @@ import lombok.Setter;
 import ru.itmo.game.drawable.Colours;
 import ru.itmo.game.util.Enviroment;
 import ru.itmo.game.util.WorldState;
+import ru.itmo.game.windows.signals.Signal;
+import ru.itmo.game.windows.signals.SignalEventProcessing;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -23,12 +24,16 @@ import java.util.logging.Logger;
 @Setter
 @Getter
 public class GameLoop {
-    public static final Logger log = Logger.getLogger(MethodHandles
-            .lookup()
-            .lookupClass()
-            .getName());
+    public static final Logger log = Logger.getLogger(
+            MethodHandles
+                    .lookup()
+                    .lookupClass()
+                    .getName()
+    );
+    private static final int FPS = 5;
+    private static final int WIDTH = 150;
+    private static final int HEIGHT = 60;
 
-    private int FPS = 5;
 
     public static void main(String[] args) {
         try {
@@ -42,14 +47,11 @@ public class GameLoop {
     public void start() throws IOException {
         log.info("GameLoop started");
 
-        int WIDTH = 150;
-        int HEIGHT = 60;
         Screen screen;
         TextGraphics textGraphics;
         TerminalSize terminalSize;
         try {
             terminalSize = new TerminalSize(WIDTH, HEIGHT);
-            // Create a terminal with the specified size
             DefaultTerminalFactory terminalFactory = new DefaultTerminalFactory();
             terminalFactory.setInitialTerminalSize(terminalSize);
             Terminal terminal = terminalFactory.createTerminal();
@@ -61,46 +63,41 @@ public class GameLoop {
             return;
         }
 
-        //  Create a new WorldState
+        mainGameLoop(
+                textGraphics,
+                terminalSize,
+                screen
+        );
+
+        screen.stopScreen();
+    }
+
+    private void mainGameLoop(TextGraphics textGraphics, TerminalSize terminalSize, Screen screen) throws IOException {
+        boolean isInterrupted = false;
+        boolean isPaused = false;
+        boolean isGameOver = false;
+
         WorldState world = new WorldState(WIDTH, HEIGHT);
-        //
-
-        boolean interrupted = false;
         long lastUpdateTime = System.currentTimeMillis();
-        boolean paused = false;
-        boolean gameOver = false;
 
-
-        /*
-        Main game loop
-         */
-        while (!interrupted) {
-
+        while (!isInterrupted) {
             textGraphics.setBackgroundColor(TextColor.ANSI.BLACK);
             textGraphics.fillRectangle(new TerminalPosition(0, 0), new TerminalSize(terminalSize.getColumns(), terminalSize.getRows()), ' ');
 
             // Render
-
             textGraphics.setForegroundColor(Colours.DEFAULT);
-
             world.draw(textGraphics);
-            ////////////////////////////
-
             screen.refresh();
 
-            //////////////////////////////////////////
-
-
             // Keyboard events
-
             KeyStroke keyStroke = screen.pollInput();
 
             Signal signal = handleInput(keyStroke, world);
             if (signal == Signal.QUIT) {
-                interrupted = true;
+                isInterrupted = true;
             }
             if (signal == Signal.PAUSE) {
-                paused = true;
+                isPaused = true;
             }
             if (signal == Signal.RESTART) {
                 world.restart();
@@ -110,20 +107,19 @@ public class GameLoop {
             }
             if (
                     signal == Signal.ITEM_1 ||
-                    signal == Signal.ITEM_2 ||
-                    signal == Signal.ITEM_3 ||
-                    signal == Signal.ITEM_4 ||
-                    signal == Signal.ITEM_5
-            ){
+                            signal == Signal.ITEM_2 ||
+                            signal == Signal.ITEM_3 ||
+                            signal == Signal.ITEM_4 ||
+                            signal == Signal.ITEM_5
+            ) {
                 world.useItem(signal.getNumber());
             }
 
-            if (paused) {
-
+            if (isPaused) {
                 pauseScreen(WIDTH, HEIGHT, textGraphics);
                 screen.refresh();
                 screen.readInput();
-                paused = false;
+                isPaused = false;
                 continue;
             }
 
@@ -136,106 +132,71 @@ public class GameLoop {
                 world.newLevel();
             }
 
-            if (gameOver) {
+            if (isGameOver) {
                 screen.clear();
                 gameOver(WIDTH, HEIGHT, textGraphics);
                 screen.refresh();
                 // Blocking
                 screen.readInput();
-
                 world.restart();
             }
-            //
 
             long currentTime = System.currentTimeMillis();
-
             if (currentTime - lastUpdateTime >= 1000 / FPS) {
-                // Game events
-                gameOver = world.update();
-                //
+                isGameOver = world.update();
                 lastUpdateTime = currentTime;
             }
         }
-
-        screen.stopScreen();
     }
 
     private Signal handleInput(KeyStroke keyStroke, WorldState worldState) {
-        Enviroment enviroment = worldState.environment;
+        Enviroment enviroment = worldState.getEnvironment();
         if (keyStroke != null) {
-            if (keyStroke.getKeyType() == KeyType.ArrowDown) {
+            if (SignalEventProcessing.isMoveDown(keyStroke)) {
                 log.info("ArrowDown");
                 if (enviroment.tryMovePlayerDown()) {
                     return Signal.MOVED_DOWN;
                 } else {
                     return Signal.NONE;
                 }
-            } else if (keyStroke.getKeyType() == KeyType.ArrowLeft) {
+            } else if (SignalEventProcessing.isMoveLeft(keyStroke)) {
                 log.info("ArrowLeft");
                 if (enviroment.tryMovePlayerLeft()) {
                     return Signal.MOVED_LEFT;
                 } else {
                     return Signal.NONE;
                 }
-            } else if (keyStroke.getKeyType() == KeyType.ArrowRight) {
+            } else if (SignalEventProcessing.isMoveRight(keyStroke)) {
                 log.info("ArrowRight");
                 if (enviroment.tryMovePlayerRight()) {
                     return Signal.MOVED_RIGHT;
                 } else {
                     return Signal.NONE;
                 }
-            } else if (keyStroke.getKeyType() == KeyType.ArrowUp) {
+            } else if (SignalEventProcessing.isMoveUp(keyStroke)) {
                 log.info("ArrowUp");
                 if (enviroment.tryMovePlayerUp()) {
                     return Signal.MOVED_UP;
                 } else {
                     return Signal.NONE;
                 }
-            } else if (keyStroke.getKeyType() == KeyType.EOF ||
-                    keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'q'
-            ) {
+            } else if (SignalEventProcessing.isQuitPressed(keyStroke)) {
                 return Signal.QUIT;
-            } else if (keyStroke.getKeyType() == KeyType.Escape
-            ) {
+            } else if (SignalEventProcessing.isPausePressed(keyStroke)) {
                 log.info("Game Paused");
                 return Signal.PAUSE;
-            } else if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'r'
-            ) {
+            } else if (SignalEventProcessing.isRestartPressed(keyStroke)) {
                 return Signal.RESTART;
-            } else if (keyStroke.getKeyType() == KeyType.Character && keyStroke.getCharacter() == 'e'
-            ) {
+            } else if (SignalEventProcessing.isAttackPressed(keyStroke)) {
                 log.info("Attack key pressed");
                 return Signal.ATTACK;
-            } else if (keyStroke.getKeyType() == KeyType.Character && Character.isDigit(keyStroke.getCharacter())
+            } else if (SignalEventProcessing.isSomeItemUsed(keyStroke)
             ) {
                 log.info("Item use key pressed");
-                switch (keyStroke.getCharacter()){
-                    case '1' -> {
-                        return Signal.ITEM_1;
-                    }
-                    case '2' -> {
-                        return Signal.ITEM_2;
-                    }
-                    case '3' -> {
-                        return Signal.ITEM_3;
-                    }
-                    case '4' -> {
-                        return Signal.ITEM_4;
-                    }
-                    case '5' -> {
-                        return Signal.ITEM_5;
-                    }
-                    default -> {
-                        return Signal.NONE;
-                    }
-
-                }
+                return SignalEventProcessing.itemUseProcess(keyStroke);
             }
-
-
         }
         return Signal.NONE;
-
     }
 
     public void pauseScreen(int width, int height, TextGraphics graphics) {
@@ -266,33 +227,5 @@ public class GameLoop {
         graphics.setForegroundColor(Colours.TEXT_COLOR);
         graphics.putString(width / 2 - (text.length() / 2), height / 2 - 1, text);
         graphics.putString(width / 2 - (text2.length() / 2), height / 2, text2);
-    }
-
-    @Getter
-    enum Signal {
-        MOVED_DOWN,
-        MOVED_UP,
-        MOVED_LEFT,
-        MOVED_RIGHT,
-        QUIT,
-        NONE,
-        PAUSE,
-        RESTART,
-        ATTACK,
-        ITEM_1(1),
-        ITEM_2(2),
-        ITEM_3(3),
-        ITEM_4(4),
-        ITEM_5(5)
-        ;
-        private int number;
-
-        Signal(int number) {
-            this.number = number;
-        }
-
-        Signal() {
-        }
-
     }
 }

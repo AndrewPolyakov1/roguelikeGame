@@ -20,14 +20,11 @@ public class Main {
         try {
             screen = terminalFactory.createScreen();
             screen.startScreen();
-
             log.info("Screen created");
 
             final WindowBasedTextGUI textGUI = new MultiWindowTextGUI(screen);
-
-            MainMenu mainMenu = new MainMenu(terminalFactory, screen);
+            MainMenu mainMenu = new MainMenu();
             mainMenu.draw(textGUI);
-
 
         } catch (IOException e) {
             log.warning(e.getMessage());

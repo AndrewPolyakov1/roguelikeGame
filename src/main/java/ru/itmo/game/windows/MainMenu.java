@@ -7,6 +7,7 @@ import com.googlecode.lanterna.gui2.Direction;
 import com.googlecode.lanterna.gui2.EmptySpace;
 import com.googlecode.lanterna.gui2.GridLayout;
 import com.googlecode.lanterna.gui2.Label;
+import com.googlecode.lanterna.gui2.LayoutData;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.Separator;
 import com.googlecode.lanterna.gui2.Window;
@@ -26,21 +27,17 @@ public class MainMenu {
             .lookup()
             .lookupClass()
             .getName());
+    public static final String MAIN_MENU = "Main menu";
 
-    private final Screen screen;
-    private final DefaultTerminalFactory terminalFactory;
 
-    public MainMenu(DefaultTerminalFactory terminalFactory, Screen screen) {
-        this.screen = screen;
-        this.terminalFactory = terminalFactory;
-    }
+    public MainMenu() { }
 
     public void draw(WindowBasedTextGUI textGUI) {
         drawMenu(textGUI);
     }
 
     private void drawMenu(WindowBasedTextGUI textGUI) {
-        Window window = new BasicWindow("Main menu");
+        Window window = new BasicWindow(MAIN_MENU);
         window.setHints(List.of(Window.Hint.FULL_SCREEN));
 
         Panel contentPanel = new Panel(new GridLayout(2));
@@ -49,16 +46,18 @@ public class MainMenu {
         gridLayout.setHorizontalSpacing(5);
         gridLayout.setVerticalSpacing(2);
 
-        Label title = new Label("ROGUELIKE");
-        title.setLayoutData(GridLayout.createLayoutData(
-                GridLayout.Alignment.CENTER, // Horizontal alignment in the grid cell if the cell is larger than the component's preferred size
-                GridLayout.Alignment.BEGINNING, // Vertical alignment in the grid cell if the cell is larger than the component's preferred size
-                true,       // Give the component extra horizontal space if available
-                false,        // Give the component extra vertical space if available
-                2,                  // Horizontal span
-                1));                  // Vertical span
+        Label title = getTitleLabel();
         contentPanel.addComponent(title);
 
+        fillContenPanelByButtons(textGUI, contentPanel, window);
+
+        fillContentPanelByLayoutComponents(contentPanel, window);
+
+        window.setComponent(contentPanel);
+        textGUI.addWindowAndWait(window);
+    }
+
+    private void fillContenPanelByButtons(WindowBasedTextGUI textGUI, Panel contentPanel, Window window) {
         Runnable wip = () -> {
             MessageDialog.showMessageDialog(textGUI,
                     "Work in progress",
@@ -80,10 +79,12 @@ public class MainMenu {
         );
         addLabelAndButton(contentPanel, "Settings", wip);
         addLabelAndButton(contentPanel, "Title Screen", wip);
+    }
 
-        /*
-            Close off with an empty row and a separator, then a button to close the window
-        */
+    /*******************************************************************************************************************
+     *Close off with an empty row and a separator, then a button to close the window
+     */
+    private static void fillContentPanelByLayoutComponents(Panel contentPanel, Window window) {
         contentPanel.addComponent(
                 new EmptySpace()
                         .setLayoutData(
@@ -95,13 +96,20 @@ public class MainMenu {
         contentPanel.addComponent(
                 new Button("Close", window::close).setLayoutData(
                         GridLayout.createHorizontallyEndAlignedLayoutData(2)));
+    }
 
-            /*
-            We now have the content panel fully populated with components. A common mistake is to forget to attach it to
-            the window, so let's make sure to do that.
-             */
-        window.setComponent(contentPanel);
-        textGUI.addWindowAndWait(window);
+    private static Label getTitleLabel() {
+        Label title = new Label("ROGUELIKE");
+        LayoutData layoutData = GridLayout.createLayoutData(
+                GridLayout.Alignment.CENTER,            // Horizontal alignment in the grid cell if the cell is larger than the component's preferred size
+                GridLayout.Alignment.BEGINNING,      // Vertical alignment in the grid cell if the cell is larger than the component's preferred size
+                true,                                                       // Give the component extra horizontal space if available
+                false,                                                      // Give the component extra vertical space if available
+                2,                                                            // Horizontal span
+                1                                                             // Vertical span
+        );
+        title.setLayoutData(layoutData);
+        return title;
     }
 
     private void addLabelAndButton(Panel contentPanel, String labelText, Runnable onClick) {

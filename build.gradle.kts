@@ -1,9 +1,19 @@
 plugins {
     id("java")
+    id("application")
 }
 
 group = "ru.itmo.game"
 version = "1.0-SNAPSHOT"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+application {
+    mainClass.set("ru.itmo.game.Main")
+}
 
 repositories {
     mavenCentral()

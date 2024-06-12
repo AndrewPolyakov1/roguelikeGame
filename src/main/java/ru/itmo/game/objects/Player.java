@@ -97,9 +97,9 @@ public class Player extends BasePerson implements DrawableInterface {
             return;
         }
         switch (item.type()) {
-            case Item.ItemType.HEALTH -> setHealth(getHealth() + item.level());
-            case Item.ItemType.DAMAGE -> setDamage(getDamage() + item.level());
-            case Item.ItemType.COOLDOWN -> setCooldown(getCooldown() - 10 * item.level());
+            case HEALTH -> setHealth(getHealth() + item.level());
+            case DAMAGE -> setDamage(getDamage() + item.level());
+            case COOLDOWN -> setCooldown(getCooldown() - 10 * item.level());
         }
         log.info("Item {} used", index);
 

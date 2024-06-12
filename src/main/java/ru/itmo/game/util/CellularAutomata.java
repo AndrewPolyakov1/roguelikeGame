@@ -12,9 +12,9 @@ public class CellularAutomata {
     public static final boolean WALL = true;
     public static final boolean PASSAGE = false;
 
-    private final boolean[][] cellGrid; // stores the state of the cells in the cellular automaton
-    private final int width; //width of cell grid in cells
-    private final int height; //height of cell grid in cells
+    private final boolean[][] cellGrid;   // stores the state of the cells in the cellular automaton
+    private final int width;                    //width of cell grid in cells
+    private final int height;                   // height of cell grid in cells
 
     /*
      * Cellular Automaton Constructor: total number of cells = width * height. Width, height are in cells.
@@ -242,8 +242,8 @@ public class CellularAutomata {
         ArrayList<Point> flooded = new ArrayList<>();
         toBeFlooded.add(initialPoint);
         while (!toBeFlooded.isEmpty()) {
-            int x = toBeFlooded.getFirst().x;
-            int y = toBeFlooded.getFirst().y;
+            int x = toBeFlooded.get(0).x;
+            int y = toBeFlooded.get(0).y;
             if (y - 1 >= 0 && !flooded.contains(new Point(x, y - 1)) && !toBeFlooded.contains(new Point(x, y - 1)) && cellGrid[x][y - 1] == PASSAGE) {
                 toBeFlooded.add(new Point(x, y - 1));
             }
@@ -256,8 +256,8 @@ public class CellularAutomata {
             if (y + 1 < height && !flooded.contains(new Point(x, y + 1)) && !toBeFlooded.contains(new Point(x, y + 1)) && cellGrid[x][y + 1] == PASSAGE) {
                 toBeFlooded.add(new Point(x, y + 1));
             }
-            flooded.add(new Point(toBeFlooded.getFirst().x, toBeFlooded.getFirst().y));
-            toBeFlooded.removeFirst();
+            flooded.add(new Point(toBeFlooded.get(0).x, toBeFlooded.get(0).y));
+            toBeFlooded.remove(0);
         }
         // if there is no cavern at initialPoint, then set flooded to null, as no cave exists here
         if (flooded.isEmpty()) {
